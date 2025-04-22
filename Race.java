@@ -21,26 +21,29 @@ public class Race
    * 
    * @param distance the length of the racetrack (in metres/yards...)
    */
-  public Race(int distance, int lanes)
+  public Race(int distance, int lanes) throws IOException
   {
-    if ((distance > 0) && (lanes > 0))
+    if ((distance > 0) && (lanes >= 2))
     {
       raceLength = distance;
       setLanes(lanes);
       startLanes();
+      loadHorsesFromFile();
     }
     else
     {
-      System.out.println("Race length must be a positive integer. Setting default length to 10.");
+      System.out.println("Race length must be a positive integer.");
+      System.out.println("Setting default length to 10. \n Default 5 lanes.");
       raceLength = 10; // Default race length
       setLanes(5); // Default lane amount
       startLanes();
+      loadHorsesFromFile();
     }
   }
 
   public void startLanes()
   {
-    for (int i=1; i <= LANES; i++)
+    for (int i=0; i < LANES; i++)
     {
       allHorses.add(null);
     }
@@ -50,7 +53,7 @@ public class Race
   {
     if (lanes > 0)
     {
-      LANES = lanes;
+      this.LANES = lanes;
     }
     else
     {
@@ -375,5 +378,20 @@ public class Race
       String t4 = t1 + " " + t2 + " " + t3;
       System.out.println(t4);
     }
+  }
+
+  void loadHorsesFromFile() throws IOException
+  {
+    allHorses = File_methods.readFile_horse();
+  }
+
+  public void saveHorsesToFile() throws IOException
+  {
+    File_methods.addFile_horse(allHorses);
+  }
+
+  public int getLanes()
+  {
+    return LANES;
   }
 }
