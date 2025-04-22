@@ -11,9 +11,9 @@ import java.lang.Math;
 public class Race
 {
   private int raceLength;
-  private Horse lane1Horse;
-  private Horse lane2Horse;
-  private Horse lane3Horse;
+  // Assuming 3 lanes for now
+  private final int LANES = 3;
+  ArrayList<Horse> allHorses = new ArrayList<Horse>();
 
   /**
    * Constructor for objects of class Race
@@ -32,9 +32,6 @@ public class Race
       System.out.println("Race length must be a positive integer. Setting default length to 100.");
       raceLength = 100; // Default race length
     }
-    lane1Horse = null;
-    lane2Horse = null;
-    lane3Horse = null;
   }
   
   /**
@@ -43,24 +40,9 @@ public class Race
    * @param theHorse the horse to be added to the race
    * @param laneNumber the lane that the horse will be added to
    */
-  public void addHorse(Horse theHorse, int laneNumber)
+  public void addHorse(Horse theHorse)
   {
-    if (laneNumber == 1)
-    {
-      lane1Horse = theHorse;
-    }
-    else if (laneNumber == 2)
-    {
-      lane2Horse = theHorse;
-    }
-    else if (laneNumber == 3)
-    {
-      lane3Horse = theHorse;
-    }
-    else
-    {
-      System.out.println("Cannot add horse to lane " + laneNumber + " because there is no such lane");
-    }
+    allHorses.add(theHorse);
   }
   
   /**
@@ -74,38 +56,31 @@ public class Race
     //declare a local variable to tell us when the race is finished
     boolean finished = false;
 
-    ArrayList<Horse> allHorses = new ArrayList<Horse>();
-
-    // Assuming 3 lanes for now
-    final int LANES = 3;
+    // NAme of list of horses is allHorses
     
     Horse lane1Horse = new Horse('a', "wrd1", 0.5, 1);
     Horse lane2Horse = new Horse('b', "wrd2", 0.5, 2);
     Horse lane3Horse = new Horse('c', "wrd3", 0.5, 3);
     
-    addHorse(lane1Horse, lane1Horse.getLane());
-    addHorse(lane2Horse, lane2Horse.getLane());
-    addHorse(lane3Horse, lane3Horse.getLane());
+    addHorse(lane1Horse);
+    addHorse(lane2Horse);
+    addHorse(lane3Horse);
     
     //reset all the lanes (all horses not fallen and back to 0). 
-    lane1Horse.goBackToStart();
-    lane2Horse.goBackToStart();
-    lane3Horse.goBackToStart();
+    resetAllHorses();
                   
     while (!finished)
     {
       //move each horse
-      moveHorse(lane1Horse);
-      moveHorse(lane2Horse);
-      moveHorse(lane3Horse);
+      moveAllHorses();
                   
       //print the race positions
       printRace();
         
       //if any of the three horses has won the race is finished
-      if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse) )
+      if (raceWonByAnyHorse())
       {
-          finished = true;
+        finished = true;
       }
        
       //wait for 100 milliseconds
@@ -159,11 +134,11 @@ public class Race
   {
     if (theHorse.getDistanceTravelled() == raceLength)
     {
-        return true;
+      return true;
     }
     else
     {
-        return false;
+      return false;
     }
   }
   
@@ -176,15 +151,14 @@ public class Race
     
     multiplePrint('=',raceLength+3); //top edge of track
     System.out.println();
-    
-    printLane(lane1Horse);
-    System.out.println();
-    
-    printLane(lane2Horse);
-    System.out.println();
-    
-    printLane(lane3Horse);
-    System.out.println();
+
+    int temp = 0;
+    while (temp < LANES)
+    {
+      printLane(allHorses.get(temp));
+      System.out.println();
+      temp += 1;
+    }
     
     multiplePrint('=',raceLength+3); //bottom edge of track
     System.out.println();    
@@ -242,5 +216,36 @@ public class Race
         System.out.print(aChar);
         i = i + 1;
     }
+  }
+
+  // Methods added to improve code
+  //
+  public void resetAllHorses()
+  {
+    for (int i = 0; i < allHorses.size(); i++)
+    {
+      allHorses.get(i).goBackToStart();  // Call backToStart for each horse
+    }
+  }
+
+  public void moveAllHorses()
+  {
+    for (int i = 0; i < allHorses.size(); i++)
+    {
+      moveHorse(allHorses.get(i));  // Call moveHorse for each horse
+    }
+  }
+
+  public boolean raceWonByAnyHorse()
+  {
+    // Iterate through all horses and check if any has won
+    for (int i = 0; i < allHorses.size(); i++)
+    {
+      if (raceWonBy(allHorses.get(i)))
+      {
+        return true;  // If a horse has won, return true
+      }
+    }
+    return false;  // No horse has won yet
   }
 }
