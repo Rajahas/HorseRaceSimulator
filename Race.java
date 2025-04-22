@@ -35,6 +35,14 @@ public class Race
     }
   }
 
+  public void startLanes()
+  {
+    for (int i=1; i <= LANES; i++)
+    {
+      allHorses.add(null);
+    }
+  }
+
   public void setLanes(int lanes)
   {
     if (lanes > 0)
@@ -55,25 +63,16 @@ public class Race
    */
   public void addHorse(Horse theHorse)
   {
-    allHorses.add(theHorse.getLane(), theHorse);
-  }
+    int laneIndex = theHorse.getLane() - 1; // Convert lane to 0-based index
 
-  public void removeHorse(String name)
-  {
-    for (int i = 0; i < allHorses.size(); i++)
+    while (allHorses.size() <= laneIndex)
     {
-      if (allHorses.get(i).getName().equals(name))
-      {
-        allHorses.remove(i);
-        System.out.println("Horse " + name + " has been removed from the race.");
-        LANES -= 1;
-        return;
-      }
+      allHorses.add(null);  // Fill empty slots with null if needed
     }
-    
-    System.out.println("No horse found with the name " + name + ".");
-  }
 
+    // Place the horse in the correct lane (or replace a null spot)
+    allHorses.set(laneIndex, theHorse);
+  }
   
   /**
    * Start the race
@@ -87,6 +86,9 @@ public class Race
     boolean finished = false;
 
     // NAme of list of horses is allHorses
+
+    // Initialise LANES many lanes
+    startLanes();
     
     Horse lane1Horse = new Horse('a', "wrd1", 0.5, 1);
     Horse lane2Horse = new Horse('b', "wrd2", 0.5, 2);
@@ -95,6 +97,8 @@ public class Race
     addHorse(lane1Horse);
     addHorse(lane2Horse);
     addHorse(lane3Horse);
+
+    removeHorse(lane2Horse.getName());
     
     //reset all the lanes (all horses not fallen and back to 0). 
     resetAllHorses();
@@ -112,6 +116,9 @@ public class Race
       {
         for (int i = 0; i < allHorses.size(); i++)
         {
+          
+          Horse temp = allHorses.get(i);
+          if (temp == null) continue;
           if (raceWonBy(allHorses.get(i)))
           {
             allHorses.get(i).increaseConfidence();  // Increase confidence when they win
@@ -119,6 +126,13 @@ public class Race
           }
         }
         finished = true;
+      }
+
+      if (allHorsesFallen())
+      {
+        System.out.println("All horses have fallen! The race is over.");
+        finished = true;
+        break;
       }
        
       //wait for 100 milliseconds
@@ -144,6 +158,11 @@ public class Race
   {
     //if the horse has fallen it cannot move, 
     //so only run if it has not fallen
+
+    if (theHorse == null)
+    {
+      return;
+    }
     if  (!theHorse.hasFallen())
     {
       //the probability that the horse will move forward depends on the confidence;
@@ -171,6 +190,10 @@ public class Race
    */
   private boolean raceWonBy(Horse theHorse)
   {
+    if (theHorse == null)
+    {
+      return false;
+    }
     if (theHorse.getDistanceTravelled() == raceLength)
     {
       return true;
@@ -211,6 +234,15 @@ public class Race
    */
   private void printLane(Horse theHorse)
   {
+    // If the lane is empty, print "Empty Lane" and the rest as empty space
+    if (theHorse == null)
+    {
+      System.out.print("| Empty Lane");
+      multiplePrint(' ', raceLength - 10); // Adjust space to keep formatting
+      System.out.print("|");
+      return;
+    }
+    
     //calculate how many spaces are needed before
     //and after the horse
     int spacesBefore = theHorse.getDistanceTravelled();
@@ -263,7 +295,15 @@ public class Race
   {
     for (int i = 0; i < allHorses.size(); i++)
     {
-      allHorses.get(i).goBackToStart();  // Call backToStart for each horse
+      Horse current = allHorses.get(i);
+      if (current == null)
+      {
+        continue;
+      }
+      else
+      {
+        current.goBackToStart();  // Call backToStart for each horse
+      }
     }
   }
 
@@ -271,6 +311,9 @@ public class Race
   {
     for (int i = 0; i < allHorses.size(); i++)
     {
+      
+      Horse temp = allHorses.get(i);
+      if (temp == null) continue;
       moveHorse(allHorses.get(i));  // Call moveHorse for each horse
     }
   }
@@ -286,5 +329,35 @@ public class Race
       }
     }
     return false;  // No horse has won yet
+  }
+
+  public void removeHorse(String name)
+  {
+    for (int i = 0; i < allHorses.size(); i++)
+    {
+      Horse horse = allHorses.get(i);
+      if (horse != null && horse.getName().equals(name))
+      {
+        allHorses.set(i, null); // Leave an empty lane instead of shifting
+        System.out.println("Horse " + name + " has been removed from the race.");
+        return;
+      }
+    }
+    
+    System.out.println("No horse found with the name " + name + ".");
+  }
+
+  private boolean allHorsesFallen()
+  {
+    for (int i=0; i<allHorses.size(); i++)
+    {
+      Horse temp = allHorses.get(i);
+      if (temp == null) continue;
+      if (!temp.hasFallen())
+      {
+        return false; // At least one horse is still running
+      }
+    }
+    return true; // All horses have fallen
   }
 }
