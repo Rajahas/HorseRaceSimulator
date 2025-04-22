@@ -14,6 +14,8 @@ public class Race
   private int raceLength;
   private int LANES;
   ArrayList<Horse> allHorses = new ArrayList<Horse>();
+  private final static String horse_file = "horse.csv";
+  private static final String horse_history = "horse_history.csv";
 
   /**
    * Constructor for objects of class Race
@@ -28,7 +30,7 @@ public class Race
       raceLength = distance;
       setLanes(lanes);
       startLanes();
-      loadHorsesFromFile();
+      loadHorsesFromFile(horse_file);
     }
     else
     {
@@ -37,7 +39,7 @@ public class Race
       raceLength = 10; // Default race length
       setLanes(5); // Default lane amount
       startLanes();
-      loadHorsesFromFile();
+      loadHorsesFromFile(horse_file);
     }
   }
 
@@ -93,6 +95,8 @@ public class Race
     
     // reset all the lanes (all horses not fallen and back to 0). 
     resetAllHorses();
+
+    increaseRace();
                   
     while (!finished)
     {
@@ -113,6 +117,7 @@ public class Race
           {
             temp.increaseConfidence();  // Increase confidence when they win
             System.out.println("\nAnd the winner is… " + temp.getName() + "!");
+            temp.setWins(temp.getWins() + 1);
             break;
           }
         }
@@ -374,24 +379,53 @@ public class Race
       if (temp == null) continue;
       String t1 = "Name: " + temp.getName();
       String t2 = "Confidence: " + temp.getConfidence();
-      String t3 = "Lane: " + temp.getLane();
-      String t4 = t1 + " " + t2 + " " + t3;
-      System.out.println(t4);
+      double win_rate = 0;
+      if (temp.getRaces() != 0)
+      {
+        win_rate = (temp.getWins() / temp.getRaces());
+      }
+      String t3 = "Win rate: " + win_rate;
+      String t4 = "Lane: " + temp.getLane();
+      String t5 = t1 + " " + t2 + " " + t3 + " " + t4;
+      System.out.println(t5);
     }
   }
 
-  void loadHorsesFromFile() throws IOException
+  void loadHorsesFromFile(String file_name) throws IOException
   {
-    allHorses = File_methods.readFile_horse();
+    allHorses = File_methods.readFile_horse(file_name);
   }
 
-  public void saveHorsesToFile() throws IOException
+  // appending method
+  public void saveHorsesToFile(String file_name) throws IOException
   {
-    File_methods.addFile_horse(allHorses);
+    File_methods.addFile_horse(allHorses, file_name);
+  }
+
+  // overwititng method
+  public void overwriteHorsesToFile(String file_name) throws IOException
+  {
+    File_methods.addFile_horse_overwrite(allHorses, file_name);
   }
 
   public int getLanes()
   {
     return LANES;
+  }
+
+  public void increaseRace()
+  {
+    for (int i=0; i< allHorses.size(); i++)
+    {
+      Horse h = allHorses.get(i);
+      if (h == null) continue;
+      h.setRaces(h.getRaces() + 1);
+      
+    }
+  }
+
+  public ArrayList<Horse> getHorses()
+  {
+    return allHorses;
   }
 }
