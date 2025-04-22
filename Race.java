@@ -27,11 +27,14 @@ public class Race
     {
       raceLength = distance;
       setLanes(lanes);
+      startLanes();
     }
     else
     {
-      System.out.println("Race length must be a positive integer. Setting default length to 100.");
+      System.out.println("Race length must be a positive integer. Setting default length to 10.");
       raceLength = 10; // Default race length
+      setLanes(5); // Default lane amount
+      startLanes();
     }
   }
 
@@ -84,23 +87,8 @@ public class Race
   {
     //declare a local variable to tell us when the race is finished
     boolean finished = false;
-
-    // NAme of list of horses is allHorses
-
-    // Initialise LANES many lanes
-    startLanes();
     
-    Horse lane1Horse = new Horse('a', "wrd1", 0.5, 1);
-    Horse lane2Horse = new Horse('b', "wrd2", 0.5, 2);
-    Horse lane3Horse = new Horse('c', "wrd3", 0.5, 3);
-    
-    addHorse(lane1Horse);
-    addHorse(lane2Horse);
-    addHorse(lane3Horse);
-
-    removeHorse(lane2Horse.getName());
-    
-    //reset all the lanes (all horses not fallen and back to 0). 
+    // reset all the lanes (all horses not fallen and back to 0). 
     resetAllHorses();
                   
     while (!finished)
@@ -116,12 +104,12 @@ public class Race
       {
         for (int i = 0; i < allHorses.size(); i++)
         {
-          
           Horse temp = allHorses.get(i);
           if (temp == null) continue;
-          if (raceWonBy(allHorses.get(i)))
+          if (raceWonBy(temp))
           {
-            allHorses.get(i).increaseConfidence();  // Increase confidence when they win
+            temp.increaseConfidence();  // Increase confidence when they win
+            System.out.println("\nAnd the winner is… " + temp.getName() + "!");
             break;
           }
         }
@@ -145,6 +133,7 @@ public class Race
         // TO DO
       }
     }
+    showHorseStats();
   }
   
   /**
@@ -302,7 +291,8 @@ public class Race
       }
       else
       {
-        current.goBackToStart();  // Call backToStart for each horse
+        current.resetFallen(); // Rise again
+        current.goBackToStart(); // Back to start of race
       }
     }
   }
@@ -359,5 +349,18 @@ public class Race
       }
     }
     return true; // All horses have fallen
+  }
+
+  public void showHorseStats()
+  {
+    for (int i=0; i<allHorses.size(); i++)
+    {
+      Horse temp = allHorses.get(i);
+      if (temp == null) continue;
+      String t1 = "Name: " + temp.getName();
+      String t2 = "Confidence: " + temp.getConfidence();
+      String t3 = t1 + t2;
+      System.out.println(t3);
+    }
   }
 }
