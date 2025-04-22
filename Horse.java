@@ -1,10 +1,16 @@
+import java.util.concurrent.TimeUnit;
+import java.lang.Math;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.io.*;
+
 /**
 * Write a description of class Horse here.
 * 
 * @author (your name) 
 * @version (a version number or a date)
 */
-public class Horse
+class Horse
 {
   //Fields of class Horse
   private String horseName;
@@ -15,7 +21,7 @@ public class Horse
   private int lane;
   private int wins;
   private int races;
-    
+
   //Constructor of class Horse
   /**
    * Constructor for objects of class Horse
@@ -45,38 +51,38 @@ public class Horse
     this.wins = 0;
     this.races = 0;
   }
-  
+
   //Other methods of class Horse
   public void fall()
   {
     this.fallen = true;
   }
-  
+
   public double getConfidence()
   {
     return this.horseConfidence;
   }
-  
+
   public int getDistanceTravelled()
   {
     return this.horseDistance;
   }
-  
+
   public String getName()
   {
     return this.horseName;
   }
-  
+
   public char getSymbol()
   {
     return this.horseSymbol;
   }
-  
+
   public void goBackToStart()
   {
     this.horseDistance = 0;
   }
-  
+
   public boolean hasFallen()
   {
     return this.fallen;
@@ -102,7 +108,7 @@ public class Horse
        this.horseConfidence = newConfidence; 
     }
   }
-  
+
   public void setSymbol(char newSymbol)
   {
     this.horseSymbol = newSymbol;
