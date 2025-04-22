@@ -152,7 +152,7 @@ public class Race
     {
       return;
     }
-    if  (!theHorse.hasFallen())
+    if (!theHorse.hasFallen())
     {
       //the probability that the horse will move forward depends on the confidence;
       if (Math.random() < theHorse.getConfidence())
@@ -198,20 +198,32 @@ public class Race
    */
   private void printRace()
   {
-    System.out.print('\u000C');  //clear the terminal window
+    System.out.print('\u000C');  // Clear the terminal window
     
-    multiplePrint('=',raceLength+3); //top edge of track
+    multiplePrint('=', raceLength + 3); // Top edge of track
     System.out.println();
 
-    int temp = 0;
-    while (temp < LANES)
+    // Iterate through each lane
+    for (int lane = 1; lane <= LANES; lane++)
     {
-      printLane(allHorses.get(temp));
+      Horse horseInLane = null;
+      
+      // Find the horse in the current lane
+      for (Horse horse : allHorses)
+      {
+        if (horse != null && horse.getLane() == lane)
+        {
+          horseInLane = horse;
+          break;
+        }
+      }
+      
+      // Print the lane with the horse (or empty if no horse is in this lane)
+      printLane(horseInLane);
       System.out.println();
-      temp += 1;
     }
     
-    multiplePrint('=',raceLength+3); //bottom edge of track
+    multiplePrint('=', raceLength + 3); // Bottom edge of track
     System.out.println();    
   }
   
@@ -359,8 +371,9 @@ public class Race
       if (temp == null) continue;
       String t1 = "Name: " + temp.getName();
       String t2 = "Confidence: " + temp.getConfidence();
-      String t3 = t1 + t2;
-      System.out.println(t3);
+      String t3 = "Lane: " + temp.getLane();
+      String t4 = t1 + " " + t2 + " " + t3;
+      System.out.println(t4);
     }
   }
 }
