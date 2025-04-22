@@ -1,5 +1,6 @@
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
+import java.util.ArrayList;
 
 /**
 * A three-horse race, each horse running in its own lane
@@ -11,8 +12,7 @@ import java.lang.Math;
 public class Race
 {
   private int raceLength;
-  // Assuming 3 lanes for now
-  private final int LANES = 3;
+  private int LANES;
   ArrayList<Horse> allHorses = new ArrayList<Horse>();
 
   /**
@@ -21,16 +21,29 @@ public class Race
    * 
    * @param distance the length of the racetrack (in metres/yards...)
    */
-  public Race(int distance)
+  public Race(int distance, int lanes)
   {
-    if (distance > 0)
+    if ((distance > 0) && (lanes > 0))
     {
       raceLength = distance;
+      setLanes(lanes);
     }
     else
     {
       System.out.println("Race length must be a positive integer. Setting default length to 100.");
-      raceLength = 100; // Default race length
+      raceLength = 10; // Default race length
+    }
+  }
+
+  public void setLanes(int lanes)
+  {
+    if (lanes > 0)
+    {
+      LANES = lanes;
+    }
+    else
+    {
+      System.out.println("number of lanes have not been changed");
     }
   }
   
@@ -42,8 +55,25 @@ public class Race
    */
   public void addHorse(Horse theHorse)
   {
-    allHorses.add(theHorse);
+    allHorses.add(theHorse.getLane(), theHorse);
   }
+
+  public void removeHorse(String name)
+  {
+    for (int i = 0; i < allHorses.size(); i++)
+    {
+      if (allHorses.get(i).getName().equals(name))
+      {
+        allHorses.remove(i);
+        System.out.println("Horse " + name + " has been removed from the race.");
+        LANES -= 1;
+        return;
+      }
+    }
+    
+    System.out.println("No horse found with the name " + name + ".");
+  }
+
   
   /**
    * Start the race
@@ -80,6 +110,14 @@ public class Race
       //if any of the three horses has won the race is finished
       if (raceWonByAnyHorse())
       {
+        for (int i = 0; i < allHorses.size(); i++)
+        {
+          if (raceWonBy(allHorses.get(i)))
+          {
+            allHorses.get(i).increaseConfidence();  // Increase confidence when they win
+            break;
+          }
+        }
         finished = true;
       }
        
@@ -111,7 +149,7 @@ public class Race
       //the probability that the horse will move forward depends on the confidence;
       if (Math.random() < theHorse.getConfidence())
       {
-         theHorse.moveForward();
+        theHorse.moveForward();
       }
           
       //the probability that the horse will fall is very small (max is 0.1)
@@ -119,7 +157,8 @@ public class Race
       //so if you double the confidence, the probability that it will fall is *2
       if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
       {
-          theHorse.fall();
+        theHorse.fall();
+        theHorse.decreaseConfidence(); // Decrease confidence of a fallen horse
       }
     }
   }
