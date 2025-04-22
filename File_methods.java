@@ -22,7 +22,7 @@ abstract class File_methods
 
       outputStream.println(horse_name + "," + horse_symbol + "," + horse_confidence + "," + horse_lane + "," + races + "," + wins);
     }
-    
+
     outputStream.close();
   } // END file_write()
 
@@ -30,7 +30,7 @@ abstract class File_methods
   public static void addFile_horse_overwrite(ArrayList<Horse> horses, String file_name) throws IOException
   {
     PrintWriter outputStream = new PrintWriter (new FileWriter(file_name));
-    
+
     for (int i=0; i<horses.size(); i++)
     {
       Horse horse = horses.get(i);
@@ -46,7 +46,7 @@ abstract class File_methods
 
       outputStream.println(horse_name + "," + horse_symbol + "," + horse_confidence + "," + horse_lane + "," + races + "," + wins);
     }
-    
+
     outputStream.close();
   }
 
@@ -54,7 +54,7 @@ abstract class File_methods
   //
   public static ArrayList<Horse> readFile_horse(String file_name) throws IOException
   {
-    ArrayList<Horse> horses = new ArrayList<>();
+    ArrayList<Horse> horses = new ArrayList<Horse>();
     BufferedReader inputStream = new BufferedReader(new FileReader(file_name));
     String s = inputStream.readLine();
     while (s != null)
@@ -63,7 +63,7 @@ abstract class File_methods
       String[] data = s.split(",");
       String name = data[0];
       char symbol = data[1].charAt(0);
-      double confidence = Double.parseDouble(data[2]);
+      double confidence = Validation.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
       int lane = Integer.parseInt(data[3]);
       int races = Integer.parseInt(data[4]);
       int wins = Integer.parseInt(data[5]);
@@ -73,4 +73,3 @@ abstract class File_methods
     inputStream.close();
     return horses;
   }
-}
