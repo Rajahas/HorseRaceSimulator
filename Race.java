@@ -126,7 +126,7 @@ public class Race
       //wait for 100 milliseconds
       try
       { 
-        TimeUnit.MILLISECONDS.sleep(100);
+        TimeUnit.MILLISECONDS.sleep(200);
       }
       catch(Exception e)
       {
