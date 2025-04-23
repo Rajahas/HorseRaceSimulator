@@ -1,5 +1,14 @@
+import java.util.Scanner;
+
 abstract class Validation
 {
+
+  public static double roundToNDecimalPlaces(double number, int n)
+  {
+    double scale = Math.pow(10, n);
+    return Math.round(number * scale) / scale;
+  }
+  
   // Useful methods that can be used for validation
   //
   // Method to get user input (String)
