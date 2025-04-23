@@ -1,37 +1,62 @@
 import java.util.Scanner;
-
-abstract class Validation
+public abstract class Validation
 {
+  // Useful methods that can be used for validation
 
+  /**
+   * Rounds a number to a specified number of decimal places.
+   * 
+   * @param number the number to be rounded
+   * @param n the number of decimal places to round to
+   * @return the rounded number
+   */
   public static double roundToNDecimalPlaces(double number, int n)
   {
     double scale = Math.pow(10, n);
     return Math.round(number * scale) / scale;
   }
   
-  // Useful methods that can be used for validation
-  //
-  // Method to get user input (String)
+  /**
+   * Prompts the user for input (String) and returns the input as a String.
+   * 
+   * @param s the Scanner object for reading input
+   * @param p the prompt message displayed to the user
+   * @return the user input as a String
+   */
   public static String input(Scanner s, String p)
   {
     System.out.println(p);
     return s.nextLine();
   }
 
-  // Method to get user input as an integer
+  /**
+   * Prompts the user for input and validates that the input can be parsed as an integer.
+   * If the input is invalid, it will prompt the user again until valid input is entered.
+   * 
+   * @param s the Scanner object for reading input
+   * @param p the prompt message displayed to the user
+   * @return the user input as an integer
+   */
   public static int int_input(Scanner s, String p)
   {
     String input = input(s, p);
-  
+
     while (number_check(input) == -1)
     {
       input = input(s, "Enter a number: ");
     } // END while
-  
+
     return Integer.parseInt(input);
   }
 
-  // Method to get user input as a double with validation
+  /**
+   * Prompts the user for input and validates that the input can be parsed as a double.
+   * If the input is invalid, it will prompt the user again until valid input is entered.
+   * 
+   * @param s the Scanner object for reading input
+   * @param p the prompt message displayed to the user
+   * @return the user input as a double
+   */
   public static double double_input(Scanner s, String p)
   {
     String input = input(s, p);
@@ -42,7 +67,12 @@ abstract class Validation
     return Double.parseDouble(input);
   }
 
-  // Method to check if a string is a valid double
+   /**
+   * Validates if the provided string can be parsed as a valid double (positive only).
+   * 
+   * @param p the input string to validate
+   * @return true if the string is a valid double, false otherwise
+   */
   public static boolean isValidDouble(String p)
   {
     // Check if the input is empty
@@ -70,7 +100,12 @@ abstract class Validation
     return true;
   }
 
-  // Method to check if a string contains only digits, optional decimal point, and optional negative sign
+  /**
+   * Checks if the string contains only digits, an optional decimal point, and an optional negative sign.
+   * 
+   * @param p the input string to check
+   * @return true if the string matches the pattern, false otherwise
+   */
   public static boolean isAllDigitsOrDecimal(String p)
   {
     int decimalCount = 0; // Track the number of decimal points
@@ -101,14 +136,19 @@ abstract class Validation
           }
           continue;
       }
-      
+
       // If any other character is found, the input is invalid
       return false;
     }
     return true;
   }
 
-  // Method to check if a double is negative
+  /**
+   * Checks if a string represents a negative double.
+   * 
+   * @param p the input string to check
+   * @return true if the string starts with a negative sign, false otherwise
+   */
   public static boolean isNegativeDouble(String p)
   {
     // Check if the input starts with a negative sign
@@ -118,8 +158,13 @@ abstract class Validation
     }
     return false;
   }
-  
-  // Method to check if a string is empty
+
+  /**
+   * Checks if a string is empty.
+   * 
+   * @param p the string to check
+   * @return true if the string is empty, false otherwise
+   */
   public static boolean isEmpty(String p)
   {
     if (p.length() == 0)
@@ -130,13 +175,23 @@ abstract class Validation
     return false;
   }
 
-  // Method to check if a character is a digit from 0-9
+  /**
+   * Checks if a character is a digit (0-9).
+   * 
+   * @param c the character to check
+   * @return true if the character is a digit, false otherwise
+   */
   public static boolean isDigit(char c)
   {
     return Character.isDigit(c);
   }
 
-  // Method to check if an entire string is all digits
+  /**
+   * Checks if an entire string consists of digits only.
+   * 
+   * @param p the string to check
+   * @return true if the string consists only of digits, false otherwise
+   */
   public static boolean isAllDigit(String p)
   {
     for (int i = 0; i < p.length(); i++)
@@ -151,7 +206,12 @@ abstract class Validation
     return true;
   }
 
-  // Method to check if a given number is negative
+  /**
+   * Checks if a number is negative.
+   * 
+   * @param n the number to check
+   * @return true if the number is negative, false otherwise
+   */
   public static boolean isNegative(int n)
   {
     if (n < 0)
@@ -162,7 +222,12 @@ abstract class Validation
     return false;
   }
 
-  // Method to perform a number check
+  /**
+   * Performs a number check to ensure the string is not empty, consists of digits, and is not negative.
+   * 
+   * @param p the input string to check
+   * @return the parsed number if valid, or -1 if invalid
+   */
   public static int number_check(String p)
   {
     // Check if the string is empty
@@ -190,7 +255,14 @@ abstract class Validation
     return number;
   }
 
-  // Method to check if a number is within a specific range
+  /**
+   * Checks if a number is within a specified range (inclusive).
+   * 
+   * @param number the number to check
+   * @param min the minimum valid value
+   * @param max the maximum valid value
+   * @return true if the number is within the range, false otherwise
+   */
   public static boolean isInRange(int number, int min, int max)
   {
     if (number < min || number > max)
@@ -201,7 +273,14 @@ abstract class Validation
     return true;
   }
 
-  // Method to check if a number is within a specific range
+  /**
+   * Checks if a number is within a specified range (inclusive) for doubles.
+   * 
+   * @param number the number to check
+   * @param min the minimum valid value
+   * @param max the maximum valid value
+   * @return true if the number is within the range, false otherwise
+   */
   public static boolean isInRange(double number, double min, double max)
   {
     if (number < min || number > max)
@@ -212,7 +291,12 @@ abstract class Validation
     return true;
   }
 
-  // Method to check if a string is a valid name (letters and spaces only)
+  /**
+   * Validates if a string is a valid name (only letters and spaces allowed).
+   * 
+   * @param name the name to validate
+   * @return true if the name contains only letters and spaces, false otherwise
+   */
   public static boolean isValidName(String name)
   {
     if (name.matches("[a-zA-Z ]+"))
@@ -223,7 +307,12 @@ abstract class Validation
     return false;
   }
 
-  // Method to check if a string is a valid symbol (single character)
+  /**
+   * Validates if a string is a valid symbol (only one character allowed).
+   * 
+   * @param symbol the symbol to validate
+   * @return true if the symbol is a single character, false otherwise
+   */
   public static boolean isValidSymbol(String symbol)
   {
     if (symbol.length() == 1)
