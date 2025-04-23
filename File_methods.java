@@ -1,3 +1,11 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 abstract class File_methods
 {
   // A method to write to a file
@@ -73,3 +81,4 @@ abstract class File_methods
     inputStream.close();
     return horses;
   }
+}

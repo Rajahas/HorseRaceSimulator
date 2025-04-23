@@ -1,6 +1,7 @@
 import java.util.concurrent.TimeUnit;
-import java.lang.Math;
 import java.util.ArrayList;
+import java.io.IOException;        // For IOException
+import java.lang.Math;            // Already included by default, optional
 
 /**
 * A three-horse race, each horse running in its own lane
