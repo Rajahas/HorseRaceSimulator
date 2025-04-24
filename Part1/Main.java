@@ -110,18 +110,84 @@ public class Main extends JFrame {
     }
 
     private void startRaceAnimation() {
-        race.resetAllHorses(); race.increaseRace();
-        Timer t = new Timer(200, null);
-        t.addActionListener(e -> {
-            race.moveAllHorses();
-            racePanel.repaint();
-            if (race.raceWonByAnyHorse() || race.allHorsesFallen()) {
-                ((Timer)e.getSource()).stop();
-                if (race.raceWonByAnyHorse()) log("Winner: " + race.getWinner().getName());
-                else log("All horses fallen");
-            }
-        });
-        t.start();
+      final boolean[] didBet = {false}; // Use an array to modify inside lambda
+      int betOpt = JOptionPane.showConfirmDialog(this,
+              "Do you want to place a bet? Current balance: $" + player.getBalance(),
+              "Bet", JOptionPane.YES_NO_OPTION);
+      if (betOpt == JOptionPane.YES_OPTION) {
+          didBet[0] = placeBet();
+      }
+  
+      race.resetAllHorses();
+      race.increaseRace();
+  
+      Timer t = new Timer(200, null);
+      t.addActionListener(e -> {
+          race.moveAllHorses();
+          racePanel.repaint();
+          if (race.raceWonByAnyHorse() || race.allHorsesFallen()) {
+              ((Timer) e.getSource()).stop();
+              if (race.raceWonByAnyHorse()) {
+                  log("Winner: " + race.getWinner().getName());
+              } else {
+                  log("All horses fallen");
+              }
+  
+              if (didBet[0]) {
+                  processBetResults();
+              }
+          }
+      });
+      t.start();
+  }
+  
+
+    private boolean placeBet() {
+        List<Horse> horses = race.getHorses();
+        if (horses.isEmpty()) {
+            log("No horses available to bet on.");
+            return false;
+        }
+
+        StringBuilder sb = new StringBuilder("Available horses:\n");
+        for (Horse h : horses)
+            sb.append(String.format("- %s (Confidence: %.2f)\n", h.getName(), h.getConfidence()));
+        JOptionPane.showMessageDialog(this, sb.toString() + "\nYour current balance: $" + player.getBalance());
+
+        String choice;
+        do {
+            choice = JOptionPane.showInputDialog(this, "Enter horse name to bet on:");
+            if (choice == null) return false;
+        } while (!race.existsHorse(choice));
+
+        double amount;
+        do {
+            String amt = JOptionPane.showInputDialog(this, "Enter amount to bet (Available: $" + player.getBalance() + "):");
+            if (amt == null) return false;
+            try { amount = Double.parseDouble(amt); }
+            catch (NumberFormatException e) { amount = -1; }
+        } while (amount <= 0 || amount > player.getBalance());
+
+        player.setBet(choice);
+        player.setBettingAmount(amount);
+        player.decreaseBalance(amount);
+        log("Bet $" + amount + " on " + choice);
+        return true;
+    }
+
+    private void processBetResults() {
+        Horse winner = race.getWinner();
+        if (winner == null) return;
+
+        double amt = player.getBettingAmount();
+        double change = (1 + winner.getConfidence()) * amt;
+        if (player.getBet().equals(winner.getName())) {
+            player.increaseBalance(change);
+            log("You won the bet! Gained: $" + change);
+        } else {
+            log("You lost the bet! Lost: $" + amt);
+        }
+        log("Current balance: $" + player.getBalance());
     }
 
     private void showStats() {
