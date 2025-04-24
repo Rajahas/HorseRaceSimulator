@@ -272,7 +272,7 @@ public class Race {
         showMessage("No horse found with the name " + name + ".");
     }
 
-    private boolean allHorsesFallen() {
+    public boolean allHorsesFallen() {
         for (Horse h : allHorses) if (h != null && !h.hasFallen()) return false;
         return true;
     }
