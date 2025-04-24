@@ -43,11 +43,24 @@ public class Main extends JFrame {
 
         // Initialize model
         player = new Person("Sample", 100.0);
-        int distance = promptInt("Enter track length:");
-        int lanes = promptInt("Enter number of lanes:");
-        race = new Race(distance, lanes);
-        racePanel.setRace(race);
-        log(String.format("Initialized race: %d length, %d lanes", distance, lanes));
+
+        JTextField lengthField = new JTextField();
+        JTextField lanesField = new JTextField();
+        Object[] inputFields = {
+            "Enter track length:", lengthField,
+            "Enter number of lanes:", lanesField
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, inputFields, "Race Setup", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            int distance = Integer.parseInt(lengthField.getText());
+            int lanes = Integer.parseInt(lanesField.getText());
+            race = new Race(distance, lanes);
+            racePanel.setRace(race);
+            log(String.format("Initialized race: %d length, %d lanes", distance, lanes));
+        } else {
+            System.exit(0);
+        }
     }
 
     private void handleAction(String cmd) {
@@ -110,37 +123,25 @@ public class Main extends JFrame {
     }
 
     private void startRaceAnimation() {
-      final boolean[] didBet = {false}; // Use an array to modify inside lambda
-      int betOpt = JOptionPane.showConfirmDialog(this,
-              "Do you want to place a bet? Current balance: $" + player.getBalance(),
-              "Bet", JOptionPane.YES_NO_OPTION);
-      if (betOpt == JOptionPane.YES_OPTION) {
-          didBet[0] = placeBet();
-      }
-  
-      race.resetAllHorses();
-      race.increaseRace();
-  
-      Timer t = new Timer(200, null);
-      t.addActionListener(e -> {
-          race.moveAllHorses();
-          racePanel.repaint();
-          if (race.raceWonByAnyHorse() || race.allHorsesFallen()) {
-              ((Timer) e.getSource()).stop();
-              if (race.raceWonByAnyHorse()) {
-                  log("Winner: " + race.getWinner().getName());
-              } else {
-                  log("All horses fallen");
-              }
-  
-              if (didBet[0]) {
-                  processBetResults();
-              }
-          }
-      });
-      t.start();
-  }
-  
+        final boolean[] didBet = {false};
+        int betOpt = JOptionPane.showConfirmDialog(this, "Do you want to place a bet? Current balance: $" + player.getBalance(), "Bet", JOptionPane.YES_NO_OPTION);
+        if (betOpt == JOptionPane.YES_OPTION) didBet[0] = placeBet();
+
+        race.resetAllHorses();
+        race.increaseRace();
+        Timer t = new Timer(200, null);
+        t.addActionListener(e -> {
+            race.moveAllHorses();
+            racePanel.repaint();
+            if (race.raceWonByAnyHorse() || race.allHorsesFallen()) {
+                ((Timer)e.getSource()).stop();
+                if (race.raceWonByAnyHorse()) log("Winner: " + race.getWinner().getName());
+                else log("All horses fallen");
+                if (didBet[0]) processBetResults();
+            }
+        });
+        t.start();
+    }
 
     private boolean placeBet() {
         List<Horse> horses = race.getHorses();

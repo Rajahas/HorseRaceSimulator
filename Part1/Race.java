@@ -61,7 +61,7 @@ public class Race {
     }
 
     public Horse getWinner() {
-        return this.winner;
+      return this.winner;
     }
 
     public void addRandomHorse() {
