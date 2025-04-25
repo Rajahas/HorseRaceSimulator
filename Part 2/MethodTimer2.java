@@ -1,4 +1,4 @@
-public class MethodTimer
+public class MethodTimer2
 {
   private long startTime;
   private long endTime;

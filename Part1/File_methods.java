@@ -89,7 +89,7 @@ abstract class File_methods
       String[] data = s.split(",");
       String name = data[0];
       char symbol = data[1].charAt(0);
-      double confidence = Validation.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
+      double confidence = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
       int lane = Integer.parseInt(data[3]);
       int races = Integer.parseInt(data[4]);
       int wins = Integer.parseInt(data[5]);
@@ -124,8 +124,8 @@ abstract class File_methods
       if (data[0].equals(name))
       {
         String horse_name = data[0];
-        double confidence = Validation.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
-        double winRating = Validation.roundToNDecimalPlaces(Double.parseDouble(data[6]), 3);
+        double confidence = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
+        double winRating = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[6]), 3);
         System.out.println("Name: " + horse_name);
         System.out.println("Confidence: " + confidence);
         System.out.println("Win rate: " + winRating);

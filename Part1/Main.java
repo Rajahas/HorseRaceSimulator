@@ -7,18 +7,18 @@ public class Main
   {
     Scanner s = new Scanner(System.in);
     final double BALANCE = 100.0;
-    Person player = new Person("Sample", BALANCE);
-    int distance = Validation.int_input(s, "Track length");
+    Person2 player = new Person2("Sample", BALANCE);
+    int distance = Validation2.int_input(s, "Track length");
     while (distance <= 0)
     {
       System.out.println("Distance must be greater than 0. Please try again.");
-      distance = Validation.int_input(s, "Track length");
+      distance = Validation2.int_input(s, "Track length");
     }
-    int num_lanes = Validation.int_input(s, "Number of lanes");
+    int num_lanes = Validation2.int_input(s, "Number of lanes");
     while (num_lanes <= 0)
     {
       System.out.println("Number of lanes must be greater than 0. Please try again.");
-      num_lanes = Validation.int_input(s, "Enter the number of lanes:");
+      num_lanes = Validation2.int_input(s, "Enter the number of lanes:");
     }
     Race race = new Race(distance, num_lanes);
 
@@ -30,7 +30,7 @@ public class Main
       printMenu();
 
       // Get user input for the menu choice
-      int choice = Validation.int_input(s, "Your choice: ");
+      int choice = Validation2.int_input(s, "Your choice: ");
 
       // Handle user choice using if statements
       if (choice == 1)
@@ -48,7 +48,7 @@ public class Main
       else if (choice == 4)
       {
         player.showBalance();
-        String wantToBet = Validation.input(s, "Do you want to place a bet before the race? (yes/no)");
+        String wantToBet = Validation2.input(s, "Do you want to place a bet before the race? (yes/no)");
         if (wantToBet.equals("yes"))
         {
           placeBet(s, player, race);
@@ -67,7 +67,7 @@ public class Main
       } 
       else if (choice == 6)
       {
-        int temp = Validation.int_input(s, "Enter the new number of lanes:");
+        int temp = Validation2.int_input(s, "Enter the new number of lanes:");
         if (temp < num_lanes)
         {
           System.out.println("Cannot reduce the number of lanes. Please enter a number greater than or equal to " + num_lanes + ".");
@@ -80,7 +80,7 @@ public class Main
       }
       else if (choice == 7)
       {
-        String horse_name = Validation.input(s, "Enter the horse's name:");
+        String horse_name = Validation2.input(s, "Enter the horse's name:");
         race.horseData(horse_name);
         
       }
@@ -119,24 +119,24 @@ public class Main
   public static void createHorse(Scanner scanner, Race race)
   {
     // Prompt user to input horse details
-    String name = Validation.input(scanner, "Enter the horse's name:");
+    String name = Validation2.input(scanner, "Enter the horse's name:");
     while (!race.isNameUnique(name))
     {
       System.out.println("A horse with that name already exists. Please choose another name.");
-      name = Validation.input(scanner, "Enter the horse's name:");
+      name = Validation2.input(scanner, "Enter the horse's name:");
     }
     
-    char symbol = Validation.input(scanner, "Enter the horse's symbol:").charAt(0);
-    double confidence = Validation.double_input(scanner, "Enter the horse's confidence (0.0 to 1.0):");
-    while (!Validation.isInRange(confidence, 0.0, 1.0))
+    char symbol = Validation2.input(scanner, "Enter the horse's symbol:").charAt(0);
+    double confidence = Validation2.double_input(scanner, "Enter the horse's confidence (0.0 to 1.0):");
+    while (!Validation2.isInRange(confidence, 0.0, 1.0))
     {
-      confidence = Validation.double_input(scanner, "Enter the horse's confidence (0.0 to 1.0):");
+      confidence = Validation2.double_input(scanner, "Enter the horse's confidence (0.0 to 1.0):");
     }
-    int lane = Validation.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + "):");
-    while (!Validation.isInRange(lane, 1, race.getLanes()))
+    int lane = Validation2.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + "):");
+    while (!Validation2.isInRange(lane, 1, race.getLanes()))
     {
       System.out.println("Invalid lane number. Please enter a number between 1 and " + race.getLanes() + ".");
-      lane = Validation.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + "):");
+      lane = Validation2.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + "):");
     }
 
     // Create a new horse
@@ -150,18 +150,18 @@ public class Main
   // Method to add a horse to a lane
   public static void addHorseToLane(Scanner scanner, Race race)
   {
-    String name = Validation.input(scanner, "Enter the horse's name to add to a lane:");
+    String name = Validation2.input(scanner, "Enter the horse's name to add to a lane:");
     for (int i = 0; i < race.getLanes(); i++)
     {
       Horse horse = race.allHorses.get(i);
       if (horse == null) continue;
       if (horse.getName().equals(name))
       {
-        int lane = Validation.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + ") for " + name + ":");
-        while (!Validation.isInRange(lane, 0, race.getLanes()))
+        int lane = Validation2.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + ") for " + name + ":");
+        while (!Validation2.isInRange(lane, 0, race.getLanes()))
         {
           System.out.println("Invalid lane number. Please enter a number between 1 and " + race.getLanes() + ".");
-          lane = Validation.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + ") for " + name + ":");
+          lane = Validation2.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + ") for " + name + ":");
           return;
         }
         horse.setLane(lane);
@@ -176,11 +176,11 @@ public class Main
   // Method to remove a horse from the race
   public static void removeHorseFromRace(Scanner scanner, Race race)
   {
-    String name = Validation.input(scanner, "Enter the name of the horse to remove:");
+    String name = Validation2.input(scanner, "Enter the name of the horse to remove:");
     race.removeHorse(name);  // Remove the horse from the race
   }
 
-  public static void placeBet(Scanner scanner, Person player, Race race)
+  public static void placeBet(Scanner scanner, Person2 player, Race race)
   {
     if (race.getHorses().isEmpty())
     {
@@ -199,24 +199,24 @@ public class Main
     }
 
     // Get bet details
-    String horseName = Validation.input(scanner, "Enter horse name to bet on:");
+    String horseName = Validation2.input(scanner, "Enter horse name to bet on:");
     while(!race.existsHorse(horseName))
     {
       System.out.println("Invalid horse choice");
-      horseName = Validation.input(scanner, "Enter horse name to bet on:");
+      horseName = Validation2.input(scanner, "Enter horse name to bet on:");
     }
-    double amount = Validation.double_input(scanner, "Enter amount to bet:");
+    double amount = Validation2.double_input(scanner, "Enter amount to bet:");
     while ((amount > player.getBalance()) || amount <= 0)
     {
       System.out.println("Invalid amount");
-      amount = Validation.double_input(scanner, "Enter amount to bet:");
+      amount = Validation2.double_input(scanner, "Enter amount to bet:");
     }
     player.setBet(horseName);
     player.decreaseBalance(amount);
     player.setBettingAmount(amount);
   }
   
-  public static void processBetResults(Person player, Race race)
+  public static void processBetResults(Person2 player, Race race)
   {
     // Determine winning horse
     Horse winner = race.getWinner();

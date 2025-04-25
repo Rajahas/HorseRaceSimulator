@@ -21,7 +21,7 @@ public class Race
   private static final String[] RANDOM_SUFFIXES = {"Storm", "Blaze", "Shadow", "Dream", "Star", "Rider", "Chaser"};
   private static final char[] RANDOM_SYMBOLS = {'♞', '♘', '♔', '♕', '♖', '♗', '♙'};
   private Horse winner;
-  private MethodTimer timer;
+  private MethodTimer2 timer;
   
 
   public boolean existsHorse(String name)
@@ -95,7 +95,7 @@ public class Race
 
     // Generate random confidence between 0.0 and 1.0 (inclusive)
     double confidence = rand.nextDouble();  // Default range is [0.0, 1.0)
-    confidence = Validation.roundToNDecimalPlaces(confidence, 3);
+    confidence = Validation2.roundToNDecimalPlaces(confidence, 3);
     return new Horse(symbol, name, confidence, lane);
   }
   
@@ -155,7 +155,7 @@ public class Race
       setLanes(lanes);
       startLanes();
       loadHorsesFromFile(horse_file);
-      this.timer = new MethodTimer();
+      this.timer = new MethodTimer2();
     }
     else
     {
@@ -165,7 +165,7 @@ public class Race
       setLanes(5); // Default lane amount
       startLanes();
       loadHorsesFromFile(horse_file);
-      this.timer = new MethodTimer();
+      this.timer = new MethodTimer2();
     }
   }
 
@@ -541,7 +541,7 @@ public class Race
       Horse temp = allHorses.get(i);
       if (temp == null) continue;
       String t1 = "Name: " + temp.getName();
-      double x = Validation.roundToNDecimalPlaces(temp.getConfidence(), 3);
+      double x = Validation2.roundToNDecimalPlaces(temp.getConfidence(), 3);
       String t2 = "Confidence: " + x;
       double winRating = 0;
       if (temp.getRaces() != 0)
@@ -549,7 +549,7 @@ public class Race
         winRating = temp.getWinRate();
       }
       winRating = temp.getWinRate();
-      winRating = Validation.roundToNDecimalPlaces(winRating, 3);
+      winRating = Validation2.roundToNDecimalPlaces(winRating, 3);
       String t3 = "Win rate: " + winRating;
       String t4 = "Lane: " + temp.getLane();
       String t5 = t1 + " " + t2 + " " + t3 + " " + t4;

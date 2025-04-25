@@ -1,5 +1,5 @@
 import java.util.Scanner;
-public abstract class Validation
+public abstract class Validation2
 {
   // Useful methods that can be used for validation
 
