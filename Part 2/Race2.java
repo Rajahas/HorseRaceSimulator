@@ -29,12 +29,83 @@ public class Race2 {
     private MethodTimer2 timer;
 
     // Weather settings
-    private static final String[] WEATHER_OPTIONS = {"Sunny", "Rainy"};
+    private static final String[] WEATHER_OPTIONS = {"Sunny", "Rainy", "Windy"};
     private String currentWeather;
 
     // Separate message window
     private static JFrame    msgFrame;
     private static JTextArea msgArea;
+
+    public void applyWeather()
+  {
+    setWeather();
+    if (currentWeather.equals("Sunny"))
+    {
+      incAllConfidence();
+    }
+    if (currentWeather.equals("Rainy"))
+    {
+      decAllConfidence();
+    }
+    if (currentWeather.equals("Windy"))
+    {
+      randomChange();
+    }
+  }
+
+  public String getWeather()
+  {
+    return this.currentWeather;
+  }
+
+  private void setWeather()
+  {
+    Random random = new Random();
+    int choice = random.nextInt(WEATHER_OPTIONS.length);
+    this.currentWeather = WEATHER_OPTIONS[choice];
+  }
+
+  private void randomChange()
+  {
+    Random random = new Random();
+    for (Horse2 horse : allHorses)
+    {
+      if (horse != null)
+      {
+        int choice = random.nextInt(2);
+        if (choice == 0)
+        {
+          horse.increaseConfidence();
+        }
+        else
+        {
+          horse.decreaseConfidence();
+        }
+      }
+    }
+  }
+
+  private void incAllConfidence()
+  {
+    for (Horse2 horse : allHorses)
+    {
+      if (horse != null)
+      {
+        horse.increaseConfidence();
+      }
+    }
+  }
+
+  private void decAllConfidence()
+  {
+    for (Horse2 horse : allHorses)
+    {
+      if (horse != null)
+      {
+        horse.decreaseConfidence();
+      }
+    }
+  }
 
     private static void initMessagePanel() {
         if (msgFrame != null) return;
@@ -199,8 +270,8 @@ public class Race2 {
 
     public void startRace() {
         // pick weather
-        currentWeather = WEATHER_OPTIONS[new Random().nextInt(WEATHER_OPTIONS.length)];
-        showMessage("Weather for this race: " + currentWeather);
+        applyWeather();
+        showMessage("Weather for this race: " + getWeather());
 
         resetAllHorses();
         increaseRace();
