@@ -165,6 +165,8 @@ public class Main2 extends JFrame {
     }
 
     private void startRaceAnimation() {
+        race.applyWeather();  
+        log("Weather for this race: " + race.getWeather());
         final boolean[] didBet = {false};
         int betOpt = JOptionPane.showConfirmDialog(
             this,
