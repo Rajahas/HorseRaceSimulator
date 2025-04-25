@@ -6,138 +6,92 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-
-public abstract class File_methods2
-{
-  /**
-   * Adds horse data to a file by appending to the existing content.
-   * 
-   * @param horses the list of Horse objects to be written to the file
-   * @param file_name the name of the file to which the horse data will be appended
-   * @throws IOException if an I/O error occurs during file writing
-   */
-  public static void addFile_horse(ArrayList<Horse2> horses, String file_name) throws IOException
-  {
-    PrintWriter outputStream = new PrintWriter (new FileWriter(new File(file_name), true));
-
-    for (int i=0; i<horses.size(); i++)
-    {
-      Horse2 horse = horses.get(i);
-
+public abstract class File_methods2 {
+  public static void addFile_horse(ArrayList<Horse2> horses, String file_name) throws IOException {
+    PrintWriter outputStream = new PrintWriter(new FileWriter(new File(file_name), true));
+    for (Horse2 horse : horses) {
       if (horse == null) continue;
-
-      String horse_name = horse.getName();
-      char horse_symbol = horse.getSymbol();
-      double horse_confidence = horse.getConfidence();
-      int horse_lane = horse.getLane();
-      int races = horse.getRaces();
-      int wins = horse.getWins();
-      double winRating = horse.getWinRate();
-
-      outputStream.println(horse_name + "," + horse_symbol + "," + horse_confidence + "," + horse_lane + "," + races + "," + wins + "," + winRating);
+      outputStream.println(
+        horse.getName()   + "," +
+        horse.getSymbol() + "," +
+        horse.getConfidence() + "," +
+        horse.getLane()   + "," +
+        horse.getRaces()  + "," +
+        horse.getWins()   + "," +
+        horse.getWinRate() + "," +
+        horse.getBreed()  + "," +
+        horse.getSaddle() + "," +
+        horse.getCoatColor()
+      );
     }
-
-    outputStream.close();
-  } // END file_write()
-
-  /**
-   * Adds horse data to a file by overwriting the existing content.
-   * 
-   * @param horses the list of Horse objects to be written to the file
-   * @param file_name the name of the file to which the horse data will overwrite the existing content
-   * @throws IOException if an I/O error occurs during file writing
-   */
-  public static void addFile_horse_overwrite(ArrayList<Horse2> horses, String file_name) throws IOException
-  {
-    PrintWriter outputStream = new PrintWriter (new FileWriter(file_name));
-
-    for (int i=0; i<horses.size(); i++)
-    {
-      Horse2 horse = horses.get(i);
-
-      if (horse == null) continue;
-
-      String horse_name = horse.getName();
-      char horse_symbol = horse.getSymbol();
-      double horse_confidence = horse.getConfidence();
-      int horse_lane = horse.getLane();
-      int races = horse.getRaces();
-      int wins = horse.getWins();
-      // double winRating = Validation.roundToNDecimalPlaces(horse.getWinRate(), 3);
-      double winRating = horse.getWinRate();
-
-      outputStream.println(horse_name + "," + horse_symbol + "," + horse_confidence + "," + horse_lane + "," + races + "," + wins + "," + winRating);
-    }
-
     outputStream.close();
   }
 
-  /**
-   * Reads horse data from a file and returns it as a list of Horse objects.
-   * 
-   * @param file_name the name of the file to read horse data from
-   * @return an ArrayList of Horse objects containing data from the file
-   * @throws IOException if an I/O error occurs during file reading
-   */
-  public static ArrayList<Horse2> readFile_horse(String file_name) throws IOException
-  {
-    ArrayList<Horse2> horses = new ArrayList<Horse2>();
+  public static void addFile_horse_overwrite(ArrayList<Horse2> horses, String file_name) throws IOException {
+    PrintWriter outputStream = new PrintWriter(new FileWriter(file_name));
+    for (Horse2 horse : horses) {
+      if (horse == null) continue;
+      outputStream.println(
+        horse.getName()   + "," +
+        horse.getSymbol() + "," +
+        horse.getConfidence() + "," +
+        horse.getLane()   + "," +
+        horse.getRaces()  + "," +
+        horse.getWins()   + "," +
+        horse.getWinRate() + "," +
+        horse.getBreed()  + "," +
+        horse.getSaddle() + "," +
+        horse.getCoatColor()
+      );
+    }
+    outputStream.close();
+  }
+
+  public static ArrayList<Horse2> readFile_horse(String file_name) throws IOException {
+    ArrayList<Horse2> horses = new ArrayList<>();
     BufferedReader inputStream = new BufferedReader(new FileReader(file_name));
     String s = inputStream.readLine();
-    while (s != null)
-    {
+    while (s != null) {
       String[] data = s.split(",");
-      String name = data[0];
-      char symbol = data[1].charAt(0);
-      double confidence = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
-      int lane = Integer.parseInt(data[3]);
-      int races = Integer.parseInt(data[4]);
-      int wins = Integer.parseInt(data[5]);
-      horses.add(new Horse2(symbol, name, confidence, lane, races, wins));
+      // expect 10 columns now
+      String name        = data[0];
+      char   symbol      = data[1].charAt(0);
+      double confidence  = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
+      int    lane        = Integer.parseInt(data[3]);
+      int    races       = Integer.parseInt(data[4]);
+      int    wins        = Integer.parseInt(data[5]);
+      String breed       = data[7];
+      String saddle      = data[8];
+      String coatColor   = data[9];
+      horses.add(new Horse2(symbol, name, confidence, lane, races, wins, breed, saddle, coatColor));
       s = inputStream.readLine();
     }
     inputStream.close();
     return horses;
   }
 
-  public static void createFile(String file_name) throws IOException
-  {
+  public static void createFile(String file_name) throws IOException {
     File file = new File(file_name);
-    if (!file.exists())
-    {
-      file.createNewFile();
-    }
-    else
-    {
-      return;
-    }
+    if (!file.exists()) file.createNewFile();
   }
 
-  public static void readHorse(String file_name, String name) throws IOException
-  {
+  public static void readHorse(String file_name, String name) throws IOException {
     System.out.println("----------------------");
     BufferedReader inputStream = new BufferedReader(new FileReader(file_name));
     String s = inputStream.readLine();
-    while (s != null)
-    {
+    while (s != null) {
       String[] data = s.split(",");
-      if (data[0].equals(name))
-      {
-        String horse_name = data[0];
-        double confidence = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
-        double winRating = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[6]), 3);
-        System.out.println("Name: " + horse_name);
-        System.out.println("Confidence: " + confidence);
-        System.out.println("Win rate: " + winRating);
+      if (data[0].equals(name)) {
+        System.out.println("Name:       " + data[0]);
+        System.out.println("Confidence: " + Validation2.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3));
+        System.out.println("Win rate:   " + Validation2.roundToNDecimalPlaces(Double.parseDouble(data[6]), 3));
+        System.out.println("Breed:      " + data[7]);
+        System.out.println("Saddle:     " + data[8]);
+        System.out.println("Coat Color: " + data[9]);
         System.out.println("----------------------");
-        s = inputStream.readLine();
       }
-      else
-      {
-        s = inputStream.readLine();
-      }
+      s = inputStream.readLine();
     }
     inputStream.close();
-    return;
   }
 }

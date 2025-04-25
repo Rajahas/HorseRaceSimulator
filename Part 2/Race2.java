@@ -7,28 +7,39 @@ import javax.swing.*;
 /**
  * A multi-horse race, each horse running in its own lane
  * for a given distance. Displays in-place to overwrite previous output,
- * and shows status messages in a separate message panel.
+ * shows status messages in a separate message panel,
+ * and randomly selects weather conditions.
  */
 public class Race2 {
     ArrayList<Horse2> allHorses = new ArrayList<>();
     private int raceLength;
     private int LANES;
-    private final static String horse_file = "horse.csv";
-    private static final String horse_history = "horse_history.csv";
-    private static final String[] RANDOM_PREFIXES = {"Thunder", "Lightning", "Midnight", "Silver", "Golden", "Dashing", "Flying"};
-    private static final String[] RANDOM_SUFFIXES = {"Storm", "Blaze", "Shadow", "Dream", "Star", "Rider", "Chaser"};
-    private static final char[] RANDOM_SYMBOLS = {'♞', '♘', '♔', '♕', '♖', '♗', '♙'};
+    private final static String horse_file      = "horse.csv";
+    private static final String horse_history   = "horse_history.csv";
+    private static final String[] RANDOM_PREFIXES = {
+        "Thunder", "Lightning", "Midnight", "Silver", "Golden", "Dashing", "Flying"
+    };
+    private static final String[] RANDOM_SUFFIXES = {
+        "Storm", "Blaze", "Shadow", "Dream", "Star", "Rider", "Chaser"
+    };
+    private static final char[] RANDOM_SYMBOLS = {
+        '♞','♘','♔','♕','♖','♗','♙'
+    };
     private Horse2 winner;
     private MethodTimer2 timer;
 
+    // Weather settings
+    private static final String[] WEATHER_OPTIONS = {"Sunny", "Rainy"};
+    private String currentWeather;
+
     // Separate message window
-    private static JFrame msgFrame;
+    private static JFrame    msgFrame;
     private static JTextArea msgArea;
 
     private static void initMessagePanel() {
         if (msgFrame != null) return;
         msgFrame = new JFrame("Race Messages");
-        msgArea = new JTextArea(15, 40);
+        msgArea  = new JTextArea(15, 40);
         msgArea.setEditable(false);
         msgFrame.add(new JScrollPane(msgArea));
         msgFrame.pack();
@@ -72,7 +83,8 @@ public class Race2 {
         }
         Horse2 randomHorse = generateRandomHorse(emptyLane + 1);
         addHorse(randomHorse);
-        showMessage("Added random horse " + randomHorse.getName() + " to lane " + randomHorse.getLane());
+        showMessage("Added random horse " + randomHorse.getName() +
+                    " to lane " + randomHorse.getLane());
     }
 
     private int findEmptyLane() {
@@ -84,19 +96,46 @@ public class Race2 {
         return -1;
     }
 
+    /**
+     * Generate a completely random horse, including breed, saddle and coat color.
+     */
     public Horse2 generateRandomHorse(int lane) {
         Random rand = new Random();
         String name;
-        char symbol;
+        char   symbol;
+        // pick a unique name
         do {
             String prefix = RANDOM_PREFIXES[rand.nextInt(RANDOM_PREFIXES.length)];
             String suffix = RANDOM_SUFFIXES[rand.nextInt(RANDOM_SUFFIXES.length)];
             symbol = RANDOM_SYMBOLS[rand.nextInt(RANDOM_SYMBOLS.length)];
-            name = prefix + " " + suffix;
+            name   = prefix + " " + suffix;
         } while (!isNameUnique(name));
+
+        // initial confidence
         double confidence = rand.nextDouble();
         confidence = Validation2.roundToNDecimalPlaces(confidence, 3);
-        return new Horse2(symbol, name, confidence, lane);
+
+        // pick random breed, saddle and coat color from Horse2 options
+        String[] breedOpts     = Horse2.getBreedOptions();
+        String[] saddleOpts    = Horse2.getSaddleOptions();
+        String[] coatColorOpts = Horse2.getCoatColorOptions();
+
+        String breed     = breedOpts[rand.nextInt(breedOpts.length)];
+        String saddle    = saddleOpts[rand.nextInt(saddleOpts.length)];
+        String coatColor = coatColorOpts[rand.nextInt(coatColorOpts.length)];
+
+        // use the full constructor: symbol, name, confidence, lane, races=0, wins=0, breed, saddle, coatColor
+        return new Horse2(
+            symbol,
+            name,
+            confidence,
+            lane,
+            0,  // initial races
+            0,  // initial wins
+            breed,
+            saddle,
+            coatColor
+        );
     }
 
     public void fillEmptyLanes() {
@@ -104,7 +143,8 @@ public class Race2 {
             if (i >= allHorses.size() || allHorses.get(i) == null) {
                 Horse2 randomHorse = generateRandomHorse(i + 1);
                 addHorse(randomHorse);
-                showMessage("Added random horse " + randomHorse.getName() + " to lane " + randomHorse.getLane());
+                showMessage("Added random horse " + randomHorse.getName() +
+                            " to lane " + randomHorse.getLane());
                 return;
             }
         }
@@ -143,11 +183,8 @@ public class Race2 {
     }
 
     public void setLanes(int lanes) {
-        if (lanes > 0) {
-            this.LANES = lanes;
-        } else {
-            showMessage("Number of lanes must be positive.");
-        }
+        if (lanes > 0) this.LANES = lanes;
+        else showMessage("Number of lanes must be positive.");
     }
 
     public void addHorse(Horse2 theHorse) {
@@ -161,6 +198,10 @@ public class Race2 {
     }
 
     public void startRace() {
+        // pick weather
+        currentWeather = WEATHER_OPTIONS[new Random().nextInt(WEATHER_OPTIONS.length)];
+        showMessage("Weather for this race: " + currentWeather);
+
         resetAllHorses();
         increaseRace();
         timer.reset(); timer.start();
@@ -177,7 +218,8 @@ public class Race2 {
                 timer.printDuration();
                 finished = true;
             }
-            try { TimeUnit.MILLISECONDS.sleep(200); } catch (InterruptedException e) {}
+            try { TimeUnit.MILLISECONDS.sleep(200); }
+            catch (InterruptedException e) {}
         }
         showHorseStats();
     }
@@ -219,7 +261,7 @@ public class Race2 {
         return line.toString();
     }
 
-    private void announceWinner() {
+    public void announceWinner() {
         for (Horse2 h : allHorses) {
             if (h != null && h.getDistanceTravelled() == raceLength) {
                 timer.stop();
@@ -256,7 +298,12 @@ public class Race2 {
     }
 
     public boolean raceWonByAnyHorse() {
-        for (Horse2 h : allHorses) if (h != null && h.getDistanceTravelled() == raceLength) return true;
+        for (Horse2 h : allHorses) {
+            if (h != null && h.getDistanceTravelled() == raceLength) {
+                setWinner(h);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -273,19 +320,24 @@ public class Race2 {
     }
 
     public boolean allHorsesFallen() {
-        for (Horse2 h : allHorses) if (h != null && !h.hasFallen()) return false;
+        for (Horse2 h : allHorses) {
+            if (h != null && !h.hasFallen()) return false;
+        }
         return true;
     }
 
     public void showHorseStats() {
         for (Horse2 h : allHorses) {
             if (h != null) {
-                double conf = Validation2.roundToNDecimalPlaces(h.getConfidence(), 3);
-                double winRate = (h.getRaces() != 0) ? Validation2.roundToNDecimalPlaces(h.getWinRate(), 3) : 0;
+                double conf    = Validation2.roundToNDecimalPlaces(h.getConfidence(), 3);
+                double winRate = (h.getRaces() != 0)
+                               ? Validation2.roundToNDecimalPlaces(h.getWinRate(), 3)
+                               : 0;
                 showMessage("Name: " + h.getName() +
                             " Confidence: " + conf +
                             " Win rate: " + winRate +
-                            " Lane: " + h.getLane());
+                            " Lane: " + h.getLane() +
+                            " Weather: " + currentWeather);
             }
         }
     }
