@@ -1,234 +1,257 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.List;
 
-public class Main
-{
-  public static void main(String[] args) throws IOException
-  {
-    Scanner s = new Scanner(System.in);
-    final double BALANCE = 100.0;
-    Person player = new Person("Sample", BALANCE);
-    int distance = Validation.int_input(s, "Track length");
-    while (distance <= 0)
-    {
-      System.out.println("Distance must be greater than 0. Please try again.");
-      distance = Validation.int_input(s, "Track length");
-    }
-    int num_lanes = Validation.int_input(s, "Number of lanes");
-    while (num_lanes <= 0)
-    {
-      System.out.println("Number of lanes must be greater than 0. Please try again.");
-      num_lanes = Validation.int_input(s, "Enter the number of lanes:");
-    }
-    Race race = new Race(distance, num_lanes);
+public class Main extends JFrame {
+    private Person player;
+    private Race race;
 
-    boolean isRunning = true;
+    private JPanel buttonPanel;
+    private RacePanel racePanel;
+    private JScrollPane messageScroll;
+    private JTextArea messageArea;
 
-    while (isRunning)
-    {
-      // Display the menu options
-      printMenu();
+    public Main() throws IOException {
+        super("Horse Race Simulator");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-      // Get user input for the menu choice
-      int choice = Validation.int_input(s, "Your choice: ");
+        // Messages
+        messageArea = new JTextArea(5, 40);
+        messageArea.setEditable(false);
+        messageScroll = new JScrollPane(messageArea);
+        add(messageScroll, BorderLayout.SOUTH);
 
-      // Handle user choice using if statements
-      if (choice == 1)
-      {
-        createHorse(s, race);
-      } 
-      else if (choice == 2)
-      {
-        addHorseToLane(s, race);
-      } 
-      else if (choice == 3)
-      {
-        removeHorseFromRace(s, race);
-      } 
-      else if (choice == 4)
-      {
-        player.showBalance();
-        String wantToBet = Validation.input(s, "Do you want to place a bet before the race? (yes/no)");
-        if (wantToBet.equals("yes"))
-        {
-          placeBet(s, player, race);
+        // Buttons
+        buttonPanel = new JPanel();
+        String[] labels = {"Create Horse", "Move Horse", "Remove Horse", "Start Race",
+                           "Show Stats", "Add Lanes", "Horse Data", "Add Random Horse", "Exit"};
+        for (String label : labels) {
+            JButton btn = new JButton(label);
+            btn.addActionListener(e -> handleAction(e.getActionCommand()));
+            buttonPanel.add(btn);
         }
-        race.startRace();
-        if (wantToBet.equals("yes"))
-        {
-          processBetResults(player, race);
+        add(buttonPanel, BorderLayout.NORTH);
+
+        // Race display
+        racePanel = new RacePanel();
+        add(racePanel, BorderLayout.CENTER);
+
+        // Initialize model
+        player = new Person("Sample", 100.0);
+
+        JTextField lengthField = new JTextField();
+        JTextField lanesField = new JTextField();
+        Object[] inputFields = {
+            "Enter track length:", lengthField,
+            "Enter number of lanes:", lanesField
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, inputFields, "Race Setup", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            int distance = Integer.parseInt(lengthField.getText());
+            int lanes = Integer.parseInt(lanesField.getText());
+            race = new Race(distance, lanes);
+            racePanel.setRace(race);
+            log(String.format("Initialized race: %d length, %d lanes", distance, lanes));
+        } else {
+            System.exit(0);
         }
-        race.overwriteHorsesToFile("horse.csv");
-        File_methods.addFile_horse(race.getHorses(), "horse_history.csv");
-      } 
-      else if (choice == 5)
-      {
-        race.showHorseStats();
-      } 
-      else if (choice == 6)
-      {
-        int temp = Validation.int_input(s, "Enter the new number of lanes:");
-        if (temp < num_lanes)
-        {
-          System.out.println("Cannot reduce the number of lanes. Please enter a number greater than or equal to " + num_lanes + ".");
+    }
+
+    private void handleAction(String cmd) {
+        try {
+            switch (cmd) {
+                case "Create Horse": createHorse(); break;
+                case "Move Horse": moveHorse(); break;
+                case "Remove Horse": removeHorse(); break;
+                case "Start Race": startRaceAnimation(); break;
+                case "Show Stats": showStats(); break;
+                case "Add Lanes": addLanes(); break;
+                case "Horse Data": horseData(); break;
+                case "Add Random Horse": addRandomHorse(); break;
+                case "Exit": System.exit(0); break;
+            }
+        } catch (Exception ex) {
+            log("Error: " + ex.getMessage());
         }
-        else
-        {
-          race.setLanes(temp);
-          System.out.println("There are now " + temp + " lanes.");
+    }
+
+    private int promptInt(String message) {
+        while (true) {
+            String s = JOptionPane.showInputDialog(this, message);
+            if (s == null) return 0;
+            try { return Integer.parseInt(s); } catch (NumberFormatException ignored) {}
         }
-      }
-      else if (choice == 7)
-      {
-        String horse_name = Validation.input(s, "Enter the horse's name:");
-        race.horseData(horse_name);
-        
-      }
-      else if (choice == 8)
-      {
-        System.out.println("Exiting the program. Goodbye!");
-        isRunning = false;  // Stop the loop and exit
-      }
-      else if (choice == 9)
-      {
-        race.addRandomHorse();
-      }
-      else
-      {
-        System.out.println("Invalid option. Please try again.");
-      }
-    }
-  }
-
-  // Method to print the menu options
-  public static void printMenu()
-  {
-    System.out.println("\nMenu:");
-    System.out.println("[1] Create a Horse");
-    System.out.println("[2] Move a Horse to a Lane");
-    System.out.println("[3] Remove a Horse from the Race");
-    System.out.println("[4] Start the Race");
-    System.out.println("[5] Show Horse Stats");
-    System.out.println("[6] Add more lanes");
-    System.out.println("[7] Horse Data");
-    System.out.println("[8] Exit");
-    System.out.println("[9] Add Random Horses");
-  }
-
-  // Method to create a horse
-  public static void createHorse(Scanner scanner, Race race)
-  {
-    // Prompt user to input horse details
-    String name = Validation.input(scanner, "Enter the horse's name:");
-    while (!race.isNameUnique(name))
-    {
-      System.out.println("A horse with that name already exists. Please choose another name.");
-      name = Validation.input(scanner, "Enter the horse's name:");
-    }
-    
-    char symbol = Validation.input(scanner, "Enter the horse's symbol:").charAt(0);
-    double confidence = Validation.double_input(scanner, "Enter the horse's confidence (0.0 to 1.0):");
-    while (!Validation.isInRange(confidence, 0.0, 1.0))
-    {
-      confidence = Validation.double_input(scanner, "Enter the horse's confidence (0.0 to 1.0):");
-    }
-    int lane = Validation.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + "):");
-    while (!Validation.isInRange(lane, 1, race.getLanes()))
-    {
-      System.out.println("Invalid lane number. Please enter a number between 1 and " + race.getLanes() + ".");
-      lane = Validation.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + "):");
     }
 
-    // Create a new horse
-    Horse newHorse = new Horse(symbol, name, confidence, lane);
-    System.out.println("Horse " + name + " created successfully!");
-
-    // Add horse to the race
-    race.addHorse(newHorse);
-  }
-
-  // Method to add a horse to a lane
-  public static void addHorseToLane(Scanner scanner, Race race)
-  {
-    String name = Validation.input(scanner, "Enter the horse's name to add to a lane:");
-    for (int i = 0; i < race.getLanes(); i++)
-    {
-      Horse horse = race.allHorses.get(i);
-      if (horse == null) continue;
-      if (horse.getName().equals(name))
-      {
-        int lane = Validation.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + ") for " + name + ":");
-        while (!Validation.isInRange(lane, 0, race.getLanes()))
-        {
-          System.out.println("Invalid lane number. Please enter a number between 1 and " + race.getLanes() + ".");
-          lane = Validation.int_input(scanner, "Enter the lane number (1 to " + race.getLanes() + ") for " + name + ":");
-          return;
+    private double promptDouble(String message) {
+        while (true) {
+            String s = JOptionPane.showInputDialog(this, message);
+            if (s == null) return 0;
+            try { return Double.parseDouble(s); } catch (NumberFormatException ignored) {}
         }
-        horse.setLane(lane);
-        System.out.println(name + " has been added to lane " + lane + "!");
-        return;
-      }
-    }
-    System.out.println("No horse found");
-    return;
-  }
-
-  // Method to remove a horse from the race
-  public static void removeHorseFromRace(Scanner scanner, Race race)
-  {
-    String name = Validation.input(scanner, "Enter the name of the horse to remove:");
-    race.removeHorse(name);  // Remove the horse from the race
-  }
-
-  public static void placeBet(Scanner scanner, Person player, Race race)
-  {
-    if (race.getHorses().isEmpty())
-    {
-      System.out.println("No horses in race to bet on!");
-      return;
     }
 
-    // Show available horses
-    System.out.println("\nAvailable horses:");
-    for (Horse horse : race.getHorses())
-    {
-      if (horse != null)
-      {
-        System.out.println("- " + horse.getName() + " Confidence: " + horse.getConfidence());
-      }
+    private void createHorse() {
+        String name = JOptionPane.showInputDialog(this, "Name:"); if (name==null) return;
+        String input = JOptionPane.showInputDialog(this, "Symbol:");
+        if (input == null || input.isEmpty()) return;
+        char symbol = input.charAt(0);
+        double conf = promptDouble("Confidence 0.0-1.0:");
+        int lane = promptInt("Lane (1 to " + race.getLanes() + "): ");
+        race.addHorse(new Horse(symbol, name, conf, lane));
+        log("Horse created: " + name);
+        racePanel.repaint();
     }
 
-    // Get bet details
-    String horseName = Validation.input(scanner, "Enter horse name to bet on:");
-    while(!race.existsHorse(horseName))
-    {
-      System.out.println("Invalid horse choice");
-      horseName = Validation.input(scanner, "Enter horse name to bet on:");
+    private void moveHorse() {
+        String name = JOptionPane.showInputDialog(this, "Horse name:"); if (name==null) return;
+        int lane = promptInt("New lane:");
+        for (Horse h: race.getHorses()) if (h!=null && h.getName().equals(name)) { h.setLane(lane); log("Moved " + name); break; }
+        racePanel.repaint();
     }
-    double amount = Validation.double_input(scanner, "Enter amount to bet:");
-    while ((amount > player.getBalance()) || amount <= 0)
-    {
-      System.out.println("Invalid amount");
-      amount = Validation.double_input(scanner, "Enter amount to bet:");
+
+    private void removeHorse() {
+        String name = JOptionPane.showInputDialog(this, "Remove horse name:"); if (name==null) return;
+        race.removeHorse(name); log("Removed " + name);
+        racePanel.repaint();
     }
-    player.setBet(horseName);
-    player.decreaseBalance(amount);
-    player.setBettingAmount(amount);
-  }
-  
-  public static void processBetResults(Person player, Race race)
-  {
-    // Determine winning horse
-    Horse winner = race.getWinner();
-    double change = ((1 + winner.getConfidence()) * player.getBettingAmount());
-    if (player.getBet().equals(race.getWinner().getName()))
-    {
-      player.increaseBalance(change);
+
+    private void startRaceAnimation() {
+        final boolean[] didBet = {false};
+        int betOpt = JOptionPane.showConfirmDialog(this, "Do you want to place a bet? Current balance: $" + player.getBalance(), "Bet", JOptionPane.YES_NO_OPTION);
+        if (betOpt == JOptionPane.YES_OPTION) didBet[0] = placeBet();
+
+        race.resetAllHorses();
+        race.increaseRace();
+        Timer t = new Timer(200, null);
+        t.addActionListener(e -> {
+            race.moveAllHorses();
+            racePanel.repaint();
+            if (race.raceWonByAnyHorse() || race.allHorsesFallen()) {
+                ((Timer)e.getSource()).stop();
+                if (race.raceWonByAnyHorse()) log("Winner: " + race.getWinner().getName());
+                else log("All horses fallen");
+                if (didBet[0]) processBetResults();
+            }
+        });
+        t.start();
     }
-    else
-    {
-      player.decreaseBalance(change);
+
+    private boolean placeBet() {
+        List<Horse> horses = race.getHorses();
+        if (horses.isEmpty()) {
+            log("No horses available to bet on.");
+            return false;
+        }
+
+        StringBuilder sb = new StringBuilder("Available horses:\n");
+        for (Horse h : horses)
+            sb.append(String.format("- %s (Confidence: %.2f)\n", h.getName(), h.getConfidence()));
+        JOptionPane.showMessageDialog(this, sb.toString() + "\nYour current balance: $" + player.getBalance());
+
+        String choice;
+        do {
+            choice = JOptionPane.showInputDialog(this, "Enter horse name to bet on:");
+            if (choice == null) return false;
+        } while (!race.existsHorse(choice));
+
+        double amount;
+        do {
+            String amt = JOptionPane.showInputDialog(this, "Enter amount to bet (Available: $" + player.getBalance() + "):");
+            if (amt == null) return false;
+            try { amount = Double.parseDouble(amt); }
+            catch (NumberFormatException e) { amount = -1; }
+        } while (amount <= 0 || amount > player.getBalance());
+
+        player.setBet(choice);
+        player.setBettingAmount(amount);
+        player.decreaseBalance(amount);
+        log("Bet $" + amount + " on " + choice);
+        return true;
     }
-    player.showBalance();
-  }
+
+    private void processBetResults() {
+        Horse winner = race.getWinner();
+        if (winner == null) return;
+
+        double amt = player.getBettingAmount();
+        double change = (1 + winner.getConfidence()) * amt;
+        if (player.getBet().equals(winner.getName())) {
+            player.increaseBalance(change);
+            log("You won the bet! Gained: $" + change);
+        } else {
+            log("You lost the bet! Lost: $" + amt);
+        }
+        log("Current balance: $" + player.getBalance());
+    }
+
+    private void showStats() {
+        List<Horse> horses = race.getHorses();
+        String[] columnNames = {"Name", "Confidence", "Win Rate", "Lane"};
+        Object[][] data = new Object[horses.size()][4];
+        for (int i = 0; i < horses.size(); i++) {
+            Horse h = horses.get(i);
+            data[i][0] = h.getName();
+            data[i][1] = h.getConfidence();
+            data[i][2] = h.getWinRate();
+            data[i][3] = h.getLane();
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(500, 200));
+
+        JOptionPane.showMessageDialog(this, scrollPane, "Horse Stats", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void addLanes() {
+        int nl = promptInt("New lanes >= " + race.getLanes()); race.setLanes(nl); log("Lanes: " + nl);
+        racePanel.repaint();
+    }
+
+    private void horseData() throws IOException {
+        String name = JOptionPane.showInputDialog(this, "Horse name:"); if (name==null) return;
+        race.horseData(name); log("Data for " + name);
+    }
+
+    private void addRandomHorse() {
+        race.addRandomHorse(); log("Added random horse"); racePanel.repaint();
+    }
+
+    private void log(String msg) {
+        messageArea.append(msg + "\n");
+    }
+
+    public static void main(String[] args) throws IOException {
+        SwingUtilities.invokeLater(() -> {
+            try { new Main().setVisible(true); } catch (IOException e) { e.printStackTrace(); }
+        });
+    }
+
+    // Panel to visualize the race
+    private static class RacePanel extends JPanel {
+        private Race race;
+        public void setRace(Race r) { this.race = r; }
+        @Override protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (race == null) return;
+            int width = getWidth() - 40;
+            int laneHeight = getHeight() / (race.getLanes() + 1);
+            for (int i = 0; i < race.getLanes(); i++) {
+                g.drawLine(20, (i+1)*laneHeight, width, (i+1)*laneHeight);
+                Horse h = null;
+                for (Horse hh : race.getHorses()) if (hh!=null && hh.getLane()==i+1) h=hh;
+                if (h != null) {
+                    int x = 20 + (int)( (double)h.getDistanceTravelled()/race.getRaceLength() * (width-20) );
+                    g.drawString(String.valueOf(h.getSymbol()), x, (i+1)*laneHeight - 5);
+                }
+            }
+        }
+    }
 }
