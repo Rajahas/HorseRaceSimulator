@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 
-abstract class File_methods
+public abstract class File_methods2
 {
   /**
    * Adds horse data to a file by appending to the existing content.
@@ -16,13 +16,13 @@ abstract class File_methods
    * @param file_name the name of the file to which the horse data will be appended
    * @throws IOException if an I/O error occurs during file writing
    */
-  public static void addFile_horse(ArrayList<Horse> horses, String file_name) throws IOException
+  public static void addFile_horse(ArrayList<Horse2> horses, String file_name) throws IOException
   {
     PrintWriter outputStream = new PrintWriter (new FileWriter(new File(file_name), true));
 
     for (int i=0; i<horses.size(); i++)
     {
-      Horse horse = horses.get(i);
+      Horse2 horse = horses.get(i);
 
       if (horse == null) continue;
 
@@ -47,13 +47,13 @@ abstract class File_methods
    * @param file_name the name of the file to which the horse data will overwrite the existing content
    * @throws IOException if an I/O error occurs during file writing
    */
-  public static void addFile_horse_overwrite(ArrayList<Horse> horses, String file_name) throws IOException
+  public static void addFile_horse_overwrite(ArrayList<Horse2> horses, String file_name) throws IOException
   {
     PrintWriter outputStream = new PrintWriter (new FileWriter(file_name));
 
     for (int i=0; i<horses.size(); i++)
     {
-      Horse horse = horses.get(i);
+      Horse2 horse = horses.get(i);
 
       if (horse == null) continue;
 
@@ -79,9 +79,9 @@ abstract class File_methods
    * @return an ArrayList of Horse objects containing data from the file
    * @throws IOException if an I/O error occurs during file reading
    */
-  public static ArrayList<Horse> readFile_horse(String file_name) throws IOException
+  public static ArrayList<Horse2> readFile_horse(String file_name) throws IOException
   {
-    ArrayList<Horse> horses = new ArrayList<Horse>();
+    ArrayList<Horse2> horses = new ArrayList<Horse2>();
     BufferedReader inputStream = new BufferedReader(new FileReader(file_name));
     String s = inputStream.readLine();
     while (s != null)
@@ -89,11 +89,11 @@ abstract class File_methods
       String[] data = s.split(",");
       String name = data[0];
       char symbol = data[1].charAt(0);
-      double confidence = Validation.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
+      double confidence = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
       int lane = Integer.parseInt(data[3]);
       int races = Integer.parseInt(data[4]);
       int wins = Integer.parseInt(data[5]);
-      horses.add(new Horse(symbol, name, confidence, lane, races, wins));
+      horses.add(new Horse2(symbol, name, confidence, lane, races, wins));
       s = inputStream.readLine();
     }
     inputStream.close();
@@ -124,8 +124,8 @@ abstract class File_methods
       if (data[0].equals(name))
       {
         String horse_name = data[0];
-        double confidence = Validation.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
-        double winRating = Validation.roundToNDecimalPlaces(Double.parseDouble(data[6]), 3);
+        double confidence = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[2]), 3);
+        double winRating = Validation2.roundToNDecimalPlaces(Double.parseDouble(data[6]), 3);
         System.out.println("Name: " + horse_name);
         System.out.println("Confidence: " + confidence);
         System.out.println("Win rate: " + winRating);

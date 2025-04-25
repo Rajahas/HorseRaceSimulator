@@ -8,7 +8,7 @@ public class Person
   public void showBalance()
   {
     System.out.println();
-    System.out.println("Balance: " + Validation.roundToNDecimalPlaces(this.balance, 2));
+    System.out.println("Balance: " + Validation2.roundToNDecimalPlaces(this.balance, 2));
   }
 
   public void setBettingAmount(double d)

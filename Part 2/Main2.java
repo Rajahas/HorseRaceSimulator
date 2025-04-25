@@ -4,16 +4,16 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.List;
 
-public class Main extends JFrame {
-    private Person player;
-    private Race race;
+public class Main2 extends JFrame {
+    private Person2 player;
+    private Race2 race;
 
     private JPanel buttonPanel;
     private RacePanel racePanel;
     private JScrollPane messageScroll;
     private JTextArea messageArea;
 
-    public Main() throws IOException {
+    public Main2() throws IOException {
         super("Horse Race Simulator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -42,7 +42,7 @@ public class Main extends JFrame {
         add(racePanel, BorderLayout.CENTER);
 
         // Initialize model
-        player = new Person("Sample", 100.0);
+        player = new Person2("Sample", 100.0);
 
         JTextField lengthField = new JTextField();
         JTextField lanesField = new JTextField();
@@ -55,7 +55,7 @@ public class Main extends JFrame {
         if (option == JOptionPane.OK_OPTION) {
             int distance = Integer.parseInt(lengthField.getText());
             int lanes = Integer.parseInt(lanesField.getText());
-            race = new Race(distance, lanes);
+            race = new Race2(distance, lanes);
             racePanel.setRace(race);
             log(String.format("Initialized race: %d length, %d lanes", distance, lanes));
         } else {
@@ -98,26 +98,26 @@ public class Main extends JFrame {
     }
 
     private void createHorse() {
-        String name = JOptionPane.showInputDialog(this, "Name:"); if (name==null) return;
+        String name = JOptionPane.showInputDialog(this, "Name:"); if (name == null) return;
         String input = JOptionPane.showInputDialog(this, "Symbol:");
         if (input == null || input.isEmpty()) return;
         char symbol = input.charAt(0);
         double conf = promptDouble("Confidence 0.0-1.0:");
         int lane = promptInt("Lane (1 to " + race.getLanes() + "): ");
-        race.addHorse(new Horse(symbol, name, conf, lane));
+        race.addHorse(new Horse2(symbol, name, conf, lane));
         log("Horse created: " + name);
         racePanel.repaint();
     }
 
     private void moveHorse() {
-        String name = JOptionPane.showInputDialog(this, "Horse name:"); if (name==null) return;
+        String name = JOptionPane.showInputDialog(this, "Horse name:"); if (name == null) return;
         int lane = promptInt("New lane:");
-        for (Horse h: race.getHorses()) if (h!=null && h.getName().equals(name)) { h.setLane(lane); log("Moved " + name); break; }
+        for (Horse2 h : race.getHorses()) if (h != null && h.getName().equals(name)) { h.setLane(lane); log("Moved " + name); break; }
         racePanel.repaint();
     }
 
     private void removeHorse() {
-        String name = JOptionPane.showInputDialog(this, "Remove horse name:"); if (name==null) return;
+        String name = JOptionPane.showInputDialog(this, "Remove horse name:"); if (name == null) return;
         race.removeHorse(name); log("Removed " + name);
         racePanel.repaint();
     }
@@ -144,14 +144,14 @@ public class Main extends JFrame {
     }
 
     private boolean placeBet() {
-        List<Horse> horses = race.getHorses();
+        List<Horse2> horses = race.getHorses();
         if (horses.isEmpty()) {
             log("No horses available to bet on.");
             return false;
         }
 
         StringBuilder sb = new StringBuilder("Available horses:\n");
-        for (Horse h : horses)
+        for (Horse2 h : horses)
             sb.append(String.format("- %s (Confidence: %.2f)\n", h.getName(), h.getConfidence()));
         JOptionPane.showMessageDialog(this, sb.toString() + "\nYour current balance: $" + player.getBalance());
 
@@ -163,7 +163,7 @@ public class Main extends JFrame {
 
         double amount;
         do {
-            String amt = JOptionPane.showInputDialog(this, "Enter amount to bet (Available: $" + player.getBalance() + "):");
+            String amt = JOptionPane.showInputDialog(this, "Enter amount to bet (Available: $" + player.getBalance() + "): ");
             if (amt == null) return false;
             try { amount = Double.parseDouble(amt); }
             catch (NumberFormatException e) { amount = -1; }
@@ -177,7 +177,7 @@ public class Main extends JFrame {
     }
 
     private void processBetResults() {
-        Horse winner = race.getWinner();
+        Horse2 winner = race.getWinner();
         if (winner == null) return;
 
         double amt = player.getBettingAmount();
@@ -192,11 +192,11 @@ public class Main extends JFrame {
     }
 
     private void showStats() {
-        List<Horse> horses = race.getHorses();
+        List<Horse2> horses = race.getHorses();
         String[] columnNames = {"Name", "Confidence", "Win Rate", "Lane"};
         Object[][] data = new Object[horses.size()][4];
         for (int i = 0; i < horses.size(); i++) {
-            Horse h = horses.get(i);
+            Horse2 h = horses.get(i);
             data[i][0] = h.getName();
             data[i][1] = h.getConfidence();
             data[i][2] = h.getWinRate();
@@ -216,7 +216,7 @@ public class Main extends JFrame {
     }
 
     private void horseData() throws IOException {
-        String name = JOptionPane.showInputDialog(this, "Horse name:"); if (name==null) return;
+        String name = JOptionPane.showInputDialog(this, "Horse name:"); if (name == null) return;
         race.horseData(name); log("Data for " + name);
     }
 
@@ -230,14 +230,14 @@ public class Main extends JFrame {
 
     public static void main(String[] args) throws IOException {
         SwingUtilities.invokeLater(() -> {
-            try { new Main().setVisible(true); } catch (IOException e) { e.printStackTrace(); }
+            try { new Main2().setVisible(true); } catch (IOException e) { e.printStackTrace(); }
         });
     }
 
     // Panel to visualize the race
     private static class RacePanel extends JPanel {
-        private Race race;
-        public void setRace(Race r) { this.race = r; }
+        private Race2 race;
+        public void setRace(Race2 r) { this.race = r; }
         @Override protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             if (race == null) return;
@@ -245,10 +245,10 @@ public class Main extends JFrame {
             int laneHeight = getHeight() / (race.getLanes() + 1);
             for (int i = 0; i < race.getLanes(); i++) {
                 g.drawLine(20, (i+1)*laneHeight, width, (i+1)*laneHeight);
-                Horse h = null;
-                for (Horse hh : race.getHorses()) if (hh!=null && hh.getLane()==i+1) h=hh;
+                Horse2 h = null;
+                for (Horse2 hh : race.getHorses()) if (hh != null && hh.getLane() == i+1) h = hh;
                 if (h != null) {
-                    int x = 20 + (int)( (double)h.getDistanceTravelled()/race.getRaceLength() * (width-20) );
+                    int x = 20 + (int)((double)h.getDistanceTravelled()/race.getRaceLength() * (width-20));
                     g.drawString(String.valueOf(h.getSymbol()), x, (i+1)*laneHeight - 5);
                 }
             }

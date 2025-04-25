@@ -4,7 +4,7 @@
 * @author (your name) 
 * @version (a version number or a date)
 */
-public class Horse
+public class Horse2
 {
   //Fields of class Horse
   private String horseName;
@@ -29,7 +29,7 @@ public class Horse
    * @param races the number of races the horse has participated in
    * @param wins the number of races the horse has won
    */
-  public Horse(char horseSymbol, String horseName, double horseConfidence, int lane, int races, int wins)
+  public Horse2(char horseSymbol, String horseName, double horseConfidence, int lane, int races, int wins)
   {
     this.horseSymbol = horseSymbol;
     this.horseName = horseName;
@@ -50,7 +50,7 @@ public class Horse
    * @param horseConfidence the confidence level of the horse
    * @param lane the lane in which the horse will race
    */
-  public Horse(char horseSymbol, String horseName, double horseConfidence, int lane)
+  public Horse2(char horseSymbol, String horseName, double horseConfidence, int lane)
   {
     this.horseSymbol = horseSymbol;
     this.horseName = horseName;

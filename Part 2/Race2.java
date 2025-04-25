@@ -9,8 +9,8 @@ import javax.swing.*;
  * for a given distance. Displays in-place to overwrite previous output,
  * and shows status messages in a separate message panel.
  */
-public class Race {
-    ArrayList<Horse> allHorses = new ArrayList<>();
+public class Race2 {
+    ArrayList<Horse2> allHorses = new ArrayList<>();
     private int raceLength;
     private int LANES;
     private final static String horse_file = "horse.csv";
@@ -18,8 +18,8 @@ public class Race {
     private static final String[] RANDOM_PREFIXES = {"Thunder", "Lightning", "Midnight", "Silver", "Golden", "Dashing", "Flying"};
     private static final String[] RANDOM_SUFFIXES = {"Storm", "Blaze", "Shadow", "Dream", "Star", "Rider", "Chaser"};
     private static final char[] RANDOM_SYMBOLS = {'♞', '♘', '♔', '♕', '♖', '♗', '♙'};
-    private Horse winner;
-    private MethodTimer timer;
+    private Horse2 winner;
+    private MethodTimer2 timer;
 
     // Separate message window
     private static JFrame msgFrame;
@@ -48,7 +48,7 @@ public class Race {
     }
 
     public boolean existsHorse(String name) {
-        for (Horse horse : allHorses) {
+        for (Horse2 horse : allHorses) {
             if (horse != null && horse.getName().equals(name)) {
                 return true;
             }
@@ -56,12 +56,12 @@ public class Race {
         return false;
     }
 
-    void setWinner(Horse h) {
+    void setWinner(Horse2 h) {
         this.winner = h;
     }
 
-    public Horse getWinner() {
-      return this.winner;
+    public Horse2 getWinner() {
+        return this.winner;
     }
 
     public void addRandomHorse() {
@@ -70,7 +70,7 @@ public class Race {
             showMessage("No empty lanes available for random horse");
             return;
         }
-        Horse randomHorse = generateRandomHorse(emptyLane + 1);
+        Horse2 randomHorse = generateRandomHorse(emptyLane + 1);
         addHorse(randomHorse);
         showMessage("Added random horse " + randomHorse.getName() + " to lane " + randomHorse.getLane());
     }
@@ -84,7 +84,7 @@ public class Race {
         return -1;
     }
 
-    public Horse generateRandomHorse(int lane) {
+    public Horse2 generateRandomHorse(int lane) {
         Random rand = new Random();
         String name;
         char symbol;
@@ -95,14 +95,14 @@ public class Race {
             name = prefix + " " + suffix;
         } while (!isNameUnique(name));
         double confidence = rand.nextDouble();
-        confidence = Validation.roundToNDecimalPlaces(confidence, 3);
-        return new Horse(symbol, name, confidence, lane);
+        confidence = Validation2.roundToNDecimalPlaces(confidence, 3);
+        return new Horse2(symbol, name, confidence, lane);
     }
 
     public void fillEmptyLanes() {
         for (int i = 0; i < LANES; i++) {
             if (i >= allHorses.size() || allHorses.get(i) == null) {
-                Horse randomHorse = generateRandomHorse(i + 1);
+                Horse2 randomHorse = generateRandomHorse(i + 1);
                 addHorse(randomHorse);
                 showMessage("Added random horse " + randomHorse.getName() + " to lane " + randomHorse.getLane());
                 return;
@@ -111,7 +111,7 @@ public class Race {
     }
 
     public boolean isNameUnique(String name) {
-        for (Horse horse : allHorses) {
+        for (Horse2 horse : allHorses) {
             if (horse != null && horse.getName().equals(name)) {
                 return false;
             }
@@ -119,22 +119,22 @@ public class Race {
         return true;
     }
 
-    public Race(int distance, int lanes) throws IOException {
-        File_methods.createFile(horse_file);
-        File_methods.createFile(horse_history);
+    public Race2(int distance, int lanes) throws IOException {
+        File_methods2.createFile(horse_file);
+        File_methods2.createFile(horse_history);
         if (distance > 0 && lanes >= 2) {
             raceLength = distance;
             setLanes(lanes);
             startLanes();
             loadHorsesFromFile(horse_file);
-            timer = new MethodTimer();
+            timer = new MethodTimer2();
         } else {
             showMessage("Race length must be a positive integer. Setting defaults.");
             raceLength = 10;
             setLanes(5);
             startLanes();
             loadHorsesFromFile(horse_file);
-            timer = new MethodTimer();
+            timer = new MethodTimer2();
         }
     }
 
@@ -150,7 +150,7 @@ public class Race {
         }
     }
 
-    public void addHorse(Horse theHorse) {
+    public void addHorse(Horse2 theHorse) {
         if (!isNameUnique(theHorse.getName())) {
             showMessage("A horse with the name '" + theHorse.getName() + "' already exists.");
             return;
@@ -195,14 +195,14 @@ public class Race {
         System.out.print(sb.toString());
     }
 
-    private Horse getHorseInLane(int laneNumber) {
-        for (Horse h : allHorses) {
+    private Horse2 getHorseInLane(int laneNumber) {
+        for (Horse2 h : allHorses) {
             if (h != null && h.getLane() == laneNumber) return h;
         }
         return null;
     }
 
-    private String formatLane(Horse theHorse) {
+    private String formatLane(Horse2 theHorse) {
         StringBuilder line = new StringBuilder();
         line.append('|');
         if (theHorse == null) {
@@ -220,7 +220,7 @@ public class Race {
     }
 
     private void announceWinner() {
-        for (Horse h : allHorses) {
+        for (Horse2 h : allHorses) {
             if (h != null && h.getDistanceTravelled() == raceLength) {
                 timer.stop();
                 h.increaseConfidence();
@@ -233,7 +233,7 @@ public class Race {
         }
     }
 
-    private void moveHorse(Horse theHorse) {
+    private void moveHorse(Horse2 theHorse) {
         if (theHorse == null || theHorse.hasFallen()) return;
         if (Math.random() < theHorse.getConfidence()) theHorse.moveForward();
         if (Math.random() < 0.1 * theHorse.getConfidence() * theHorse.getConfidence()) {
@@ -243,7 +243,7 @@ public class Race {
     }
 
     public void resetAllHorses() {
-        for (Horse h : allHorses) {
+        for (Horse2 h : allHorses) {
             if (h != null) {
                 h.resetFallen();
                 h.goBackToStart();
@@ -252,17 +252,17 @@ public class Race {
     }
 
     public void moveAllHorses() {
-        for (Horse h : allHorses) moveHorse(h);
+        for (Horse2 h : allHorses) moveHorse(h);
     }
 
     public boolean raceWonByAnyHorse() {
-        for (Horse h : allHorses) if (h != null && h.getDistanceTravelled() == raceLength) return true;
+        for (Horse2 h : allHorses) if (h != null && h.getDistanceTravelled() == raceLength) return true;
         return false;
     }
 
     public void removeHorse(String name) {
         for (int i = 0; i < allHorses.size(); i++) {
-            Horse h = allHorses.get(i);
+            Horse2 h = allHorses.get(i);
             if (h != null && h.getName().equals(name)) {
                 allHorses.set(i, null);
                 showMessage("Horse " + name + " has been removed from the race.");
@@ -273,15 +273,15 @@ public class Race {
     }
 
     public boolean allHorsesFallen() {
-        for (Horse h : allHorses) if (h != null && !h.hasFallen()) return false;
+        for (Horse2 h : allHorses) if (h != null && !h.hasFallen()) return false;
         return true;
     }
 
     public void showHorseStats() {
-        for (Horse h : allHorses) {
+        for (Horse2 h : allHorses) {
             if (h != null) {
-                double conf = Validation.roundToNDecimalPlaces(h.getConfidence(), 3);
-                double winRate = (h.getRaces() != 0) ? Validation.roundToNDecimalPlaces(h.getWinRate(), 3) : 0;
+                double conf = Validation2.roundToNDecimalPlaces(h.getConfidence(), 3);
+                double winRate = (h.getRaces() != 0) ? Validation2.roundToNDecimalPlaces(h.getWinRate(), 3) : 0;
                 showMessage("Name: " + h.getName() +
                             " Confidence: " + conf +
                             " Win rate: " + winRate +
@@ -291,15 +291,15 @@ public class Race {
     }
 
     void loadHorsesFromFile(String file_name) throws IOException {
-        allHorses = File_methods.readFile_horse(file_name);
+        allHorses = File_methods2.readFile_horse(file_name);
     }
 
     public void saveHorsesToFile(String file_name) throws IOException {
-        File_methods.addFile_horse(allHorses, file_name);
+        File_methods2.addFile_horse(allHorses, file_name);
     }
 
     public void overwriteHorsesToFile(String file_name) throws IOException {
-        File_methods.addFile_horse_overwrite(allHorses, file_name);
+        File_methods2.addFile_horse_overwrite(allHorses, file_name);
     }
 
     public int getLanes() {
@@ -307,16 +307,16 @@ public class Race {
     }
 
     public void increaseRace() {
-        for (Horse h : allHorses) {
+        for (Horse2 h : allHorses) {
             if (h != null) h.setRaces(h.getRaces() + 1);
         }
     }
 
-    public ArrayList<Horse> getHorses() {
+    public ArrayList<Horse2> getHorses() {
         return allHorses;
     }
 
     public void horseData(String name) throws IOException {
-        File_methods.readHorse(horse_history, name);
+        File_methods2.readHorse(horse_history, name);
     }
 }

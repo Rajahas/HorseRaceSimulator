@@ -1,4 +1,4 @@
-public class Person
+public class Person2
 {
   private String name;
   private double balance;
@@ -8,7 +8,7 @@ public class Person
   public void showBalance()
   {
     System.out.println();
-    System.out.println("Balance: " + Validation.roundToNDecimalPlaces(this.balance, 2));
+    System.out.println("Balance: " + Validation2.roundToNDecimalPlaces(this.balance, 2));
   }
 
   public void setBettingAmount(double d)
@@ -31,7 +31,7 @@ public class Person
     return this.bet;
   }
 
-  public Person(String name, double initialBalance)
+  public Person2(String name, double initialBalance)
   {
     this.name = name;
     this.balance = initialBalance;
