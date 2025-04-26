@@ -272,10 +272,13 @@ public class Race2 {
         // pick weather
         applyWeather();
         showMessage("Weather for this race: " + getWeather());
+        applyAllAttributes();
+        showMessage("Attributes applied to horses");
 
         resetAllHorses();
         increaseRace();
-        timer.reset(); timer.start();
+        timer.reset();
+        timer.start();
         boolean finished = false;
         while (!finished) {
             moveAllHorses();
@@ -441,5 +444,16 @@ public class Race2 {
 
     public void horseData(String name) throws IOException {
         File_methods2.readHorse(horse_history, name);
+    }
+
+    private void applyAllAttributes()
+    {
+        for (Horse2 h: allHorses)
+        {
+            if (h != null)
+            {
+                h.applyAttributes();
+            }
+        }
     }
 }
