@@ -25,13 +25,13 @@ public class Horse2 {
 
     // Available options
     private static final String[] BREED_OPTIONS = {
-        "Thoroughbred", "Arabian", "Quarter Horse", "Paint", "Appaloosa"
+        "Thoroughbred", "Arabian", "Paint", "Appaloosa"
     };
     private static final String[] SADDLE_OPTIONS = {
-        "English", "Western", "Endurance", "Australian"
+        "Soft", "Hard", "Big", "Small", "Round"
     };
     private static final String[] COAT_COLOR_OPTIONS = {
-        "Bay", "Chestnut", "Gray", "Black", "Palomino"
+        "Black", "White", "Green", "Grey", "Yellow"
     };
 
     /**
@@ -144,4 +144,91 @@ public class Horse2 {
         }
     }
     public static String[] getCoatColorOptions() { return COAT_COLOR_OPTIONS.clone(); }
+
+    private void applyBreed()
+{
+  if (this.breed.equals("Thoroughbred"))
+  {
+    increaseConfidence();
+    return;
+  }
+  if (this.breed.equals("Arabian"))
+  {
+    increaseConfidence();
+    return;
+  }
+  if (this.breed.equals("Paint"))
+  {
+    increaseConfidence();
+    return;
+  }
+  if (this.breed.equals("Appaloosa"))
+  {
+    decreaseConfidence();
+    return;
+  }
+}
+
+    private void applySaddle()
+{
+  if (this.saddle.equals("Soft"))
+  {
+    increaseConfidence();
+    return;
+  }
+  if (this.saddle.equals("Hard"))
+  {
+    increaseConfidence();
+    increaseConfidence();
+    return;
+  }
+  if (this.saddle.equals("Big"))
+  {
+    decreaseConfidence();
+    return;
+  }
+  if (this.saddle.equals("Small"))
+  {
+    return;
+  }
+  if (this.saddle.equals("Round"))
+  {
+    increaseConfidence();
+    return;
+  }
+}
+
+private void applyCoat()
+{
+  if (this.coatColor.equals("Black"))
+  {
+    increaseConfidence();
+    return;
+  }
+  if (this.coatColor.equals("White"))
+  {
+    return;
+  }
+  if (this.coatColor.equals("Green"))
+  {
+    decreaseConfidence();
+    return;
+  }
+  if (this.coatColor.equals("Grey"))
+  {
+    increaseConfidence();
+    return;
+  }
+  if (this.coatColor.equals("Yellow"))
+  {
+    return;
+  }
+}
+
+public void applyAttributes()
+{
+  applyBreed();
+  applySaddle();
+  applyCoat();
+}
 }
